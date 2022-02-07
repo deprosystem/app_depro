@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Admin page</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <link rel="icon" href="img/logo_blue.png" sizes="40x40">
+
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+        <link rel="stylesheet" href="css/index.css" type="text/css">
+        <link rel="stylesheet" href="css/hamburger.css" type="text/css">
+       
+        <script src="js/init.js" charset="UTF-8"></script>
+        <script src="js/tables.js"></script>
+        <script src="js/ajax/ajax.js" ></script>
+        <script src="js/tools/formWind.js"></script>
+        <script src="js/tools/dialogError.js"></script>
+        <script src="js/tools/tool.js"></script>
+        <script src="js/tools/checkElement.js"></script>
+        <script src="js/tools/showList.js"></script>
+        <script src="js/editData/metaData.js" ></script>
+<!--  Описание date.js в https://github.com/datejs/Datejs   -->
+        <script src="js/tools/date.js"></script>
+
+        <script src="js/editData/editTab.js" ></script>
+        <script src="js/scroll/scrollX.js"></script>
+        <script src="js/scroll/scrollY.js"></script>
+        <script src="js/menu/menuIndex.js"></script>
+        <script src="js/images/images.js"></script>
+        <script>
+            function sendQ() {
+                let url = url_q.value;
+                let dat = data_q.value;
+                doServer("POST", url, cbSend, dat);
+            }
+            
+            function cbSend(res) {
+//                console.log("res="+res+"<<");
+            }
+        </script>
+        
+    </head>
+    <body onload="initiale();">
+        <div id="header">
+            <div id="panel_hamburger" onclick="mainMenuShow()">
+                <div id="hamburger1" class="hamburger1" ></div>
+                <div id="hamburger2" class="hamburger2" ></div>
+                <div id="hamburger3" class="hamburger3" ></div> 
+            </div>
+
+            <div id="project_name_bl" onclick="logP();" style="background-color:var(--c_blue);float: left;width:100px;height: 100%;display:none">
+                <div id="project_name" style="color:white;text-align:center;margin-top: 9px"></div>
+            </div>
+            
+            <div id="statusDebagView" style="background-color:red;float: left;width:100px;height: 100%;display:none;margin-left: 100px">
+                <div style="color:white;text-align:center;margin-top: 9px">Status debag</div>
+            </div>
+
+        </div>
+        <div id="hintMenuMain" style="position: absolute; top: 23px; left: 30px; background-color: #55f; color: white; 
+             display: none; z-index: 1; padding-left: 5px; padding-right: 5px">Меню</div>
+        <div id="menuMain" class="menu_main" style="margin-left: 15px; position: absolute; top: var(--h_header); z-index: 100; display: none"></div>
+        <div style="position: absolute;left: 5px;top: var(--h_header);bottom: 0;width: 350px;background-color:#fefeff;border-right: 1px solid #1dace9">
+            <div style="position: absolute;left: 0;top: 0;right: 0;height: 40px;width: 100%;font-size: 20px;text-align: center;border-bottom: 1px solid #1dace9">
+                <div style="margin-top: 7px">Tables</div>
+            </div>
+            <div id="table_list">
+                
+            </div>
+        </div>
+        
+<!--
+        <div style="position: absolute;left: 400px;top: 100px;bottom: 200px;width: 400px;background-color:#f7f7f7;border: 1px solid #1dace9">
+            <div style="margin-top: 20px;margin-left: 20px">URL</div>
+            <input class="input_style_ui" id="url_q" type="text" size="10" style="width: 250px; margin-top: 5px;margin-left: 20px" value="query/o_tfsqz6uw0n058/29">
+            <div style="margin-top: 10px;margin-left: 20px">DATA</div>
+            <input class="input_style_ui" id="data_q" type="text" size="10" style="width: 300px; margin-top: 5px;margin-left: 20px" value='{"aa":"ротть","ss":"оолль","dd":"544","zz":"hh"}'>
+            <div onclick="sendQ()" style="margin-top: 25px;margin-left: 20px;width: 100px;height: 40px;background-color: #eef">SEND</div>
+        </div>
+-->
+
+    </body>
+</html>

@@ -1,0 +1,9 @@
+#panel_hamburger {width: 30px; height: 100%;background-color: var(--c_yelow);float: left;cursor: pointer;padding-left: 14px}
+#panel_hamburger:hover {background-color:#e8b100}
+#hamburger1 {top: 11px; background: #000; height: 1.5px; width: 15px; position: absolute; display: inline-block; transform-origin: 5%; }
+#hamburger2 {top: 16px; background: #000; height: 1.5px; width: 15px; position: absolute; display: inline-block; }
+#hamburger3 {top: 21px; background: #000; height: 1.5px; width: 15px; position: absolute; display: inline-block; transform-origin: 5%;}
+.hamburger1{ transform: rotate(0deg); transition: transform 0.5s linear; } 
+.hamburger1_open{ transform: rotate(45deg); transition: transform 0.5s linear; }
+.hamburger3{ transform: rotate(0deg); transition: transform 0.5s linear; } 
+.hamburger3_open{ transform: rotate(-45deg); transition: transform 0.5s linear; } 
