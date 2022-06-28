@@ -4,19 +4,25 @@ import com.google.gson.JsonSyntaxException;
 import db.QueryDB;
 import entity.DataServlet;
 import entity.ErrorSQL;
+import entity.Field;
 import entity.Query;
 import entity.SqlParam;
 import entity.FieldValue;
+import entity.ListWhere;
+import entity.NameVal;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import static javafx.scene.input.KeyCode.T;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
@@ -154,21 +160,100 @@ public class Querys extends BaseServlet {
                             Query resEx = queryDB.getQueryMobile(sqlEx);
                             String sql;
                             String param_1;
-//                            String data = "";
                             switch (resEx.type_query) {
                                 case "SELECT":
                                     sql = resEx.sql_query;
                                     param_1 = resEx.param_query;
+                                    
+                                    data = null;
+                                    NameVal[] nameVal;
+                                    try {
+                                        data = getStringRequest(request);
+                                    } catch (IOException ex) { }
+                                    int pk;
+                                    if (data != null && data.length() > 0) {
+                                        try {
+                                            fsimpl = js.jsonToModel(data);
+                                        } catch (json_simple.JsonSyntaxException ex) {
+                                            System.out.println("query SELECT JsonSyntaxException=" + ex);
+                                            sendError(response, "query SELECT JsonSyntaxException=" + ex.toString());
+                                        }
+                                        if (fsimpl == null) {
+                                            break;
+                                        }
+                                        rec = (Record) fsimpl.value;
+                                        pk = rec.size();
+                                        nameVal = new NameVal[pk];
+                                        for (int p = 0; p < pk; p++) {
+                                            FieldSimpl ff = rec.get(p);
+                                            NameVal nv = new NameVal();
+                                            nv.name = ff.name;
+                                            nv.value = (String) ff.value;
+                                            nameVal[p] = nv;
+                                        }
+                                    } else {
+                                        Map<String, String[]> mapPar = request.getParameterMap();
+                                        int i = 0;
+                                        pk = mapPar.size();
+                                        nameVal = new NameVal[pk];
+                                        for(Map.Entry<String, String[]> entry: mapPar.entrySet()) {
+                                            NameVal nv = new NameVal();
+                                            nv.name = entry.getKey();
+                                            nv.value = entry.getValue()[0];
+                                            nameVal[i] = nv;
+                                            i++;
+                                        }
+                                    }
+                                    ListWhere arWhere = gson.fromJson(resEx.listWhere, ListWhere.class);
+                                    int jkW = arWhere.size();
                                     if (param_1 != null && param_1.length() > 0) {
                                         String[] arPar = param_1.split(",");
                                         int ik = arPar.length;
+//                                            ListWhere arWhere = gson.fromJson(resEx.listWhere, ListWhere.class);
+//                                            int jkW = arWhere.size();
                                         for (int i = 0; i < ik; i++) {
-                                            String parI = request.getParameter(arPar[i]);
-                                            if (parI == null) {
-                                                sendError(response, "Query " + resEx.id_query + " " + resEx.name_query + " parameter not specified " + arPar[i]);
+                                            String namePar = arPar[i];
+                                            String parI = null;
+                                            for (int p = 0; p < pk; p++) {
+                                                NameVal nv = nameVal[p];
+                                                if (nv.name.equals(namePar)) {
+                                                    parI = nv.value;
+                                                    break;
+                                                }
                                             }
-                                            sql = sql.replace("%" + arPar[i] + "%", parI);
+                                            if (parI.equals("!@#$%^&<>")) {
+                                                if (ds.userId < 0) {
+                                                    sendError(response, Constants.ERR_NO_AUTCH);
+                                                } else {
+                                                    parI = String.valueOf(ds.userId);
+                                                }
+                                            }
+                                            String namePar5 = "%" + namePar + "%";
+                                            for (int j = 0; j < jkW; j++) {
+                                                String whereJ = arWhere.get(j);
+                                                if (whereJ.indexOf(namePar5) > -1) {
+                                                    if (parI == null) {
+                                                        arWhere.set(j, "");
+                                                    } else {
+                                                        arWhere.set(j, whereJ.replace(namePar5, parI));
+                                                    }
+//                                                    break;
+                                                }
+                                            }
                                         }
+                                    }
+                                    String sepW = " WHERE ";
+                                    for (int j = 0; j < jkW; j++) {
+                                        String whereJ = arWhere.get(j);
+                                        if (whereJ.length() > 0) {
+                                            sql += sepW + whereJ;
+                                            sepW = " AND ";
+                                        }
+                                    }
+                                        
+                                    String ord = resEx.orderBy;
+                                    if (ord != null && ord.length() > 0) {
+                                        sql += " ORDER BY " + ord;
                                     }
                                     String resMob = queryDB.getQueryList(sql);
                                     sendResult(response, resMob);
@@ -185,16 +270,6 @@ public class Querys extends BaseServlet {
                                         }
                                     }
                                     if (data.length() > 2) {
-/*
-                                        String appPath = ds.patchOutsideProject;
-                                        if (appPath.indexOf(File.separator) == 0) {
-                                            appPath = "/usr/local/";
-                                        }
-
-                                        String fileName = "";
-                                        String pathImg = "img_app/" + ds.schema + "/";
-                                        resultPath = appPath + pathImg;
-*/
                                         fsimpl = null;
                                         try {
                                             fsimpl = js.jsonToModel(data);
@@ -202,9 +277,7 @@ public class Querys extends BaseServlet {
                                             System.out.println("query INSERT JsonSyntaxException=" + ex);
                                         }
                                         rec = (Record) fsimpl.value;
-                                        for (FieldSimpl fs : rec) {
 
-                                        }
                                         String tableName = resEx.param_query;
                                         String nameId = "id_" + tableName;
                                         sql = resEx.sql_query;
@@ -253,10 +326,19 @@ public class Querys extends BaseServlet {
 
                                         String ff = "", vv = "";
                                         String sep = "";
+                                        String valSt;
                                         for (FieldSimpl item : rec) {
                                                 ff += sep + item.name;
                                                 if (item.type == FieldSimpl.TYPE_STRING) {
-                                                    vv += sep + "'" + item.value + "'";
+                                                    valSt = String.valueOf(item.value);
+                                                    if (valSt.equals("!@#$%^&<>")) {
+                                                        if (ds.userId < 0) {
+                                                            sendError(response, Constants.ERR_NO_AUTCH);
+                                                        } else {
+                                                            valSt = String.valueOf(ds.userId);
+                                                        }
+                                                    }
+                                                    vv += sep + "'" + valSt + "'";
                                                 } else {
                                                     vv += sep + item.value;
                                                 }
@@ -269,7 +351,7 @@ public class Querys extends BaseServlet {
                                             String result = "{\"" + nameId + "\":" + errSql.id;
                                             for (FieldSimpl item : rec) {
                                                 if (item.type == FieldSimpl.TYPE_STRING) {
-                                                    vv = "\"" + item.value + "\"";
+                                                    vv = "\"" + escapingQuotes((String )item.value) + "\"";
                                                 } else {
                                                     vv = item.value.toString();
                                                 }
@@ -285,11 +367,32 @@ public class Querys extends BaseServlet {
                                         sendError(response, ERR.INS_ERR + " No data to insert");
                                     }
                                     break;
+                                case "FILTER":
+                                    sql = resEx.sql_query;
+                                    param_1 = resEx.param_query;
+                                    if (param_1 != null && param_1.length() > 0) {
+                                        String[] arPar = param_1.split(",");
+                                        int ik = arPar.length;
+                                        for (int i = 0; i < ik; i++) {
+                                            String parI = request.getParameter(arPar[i]);
+                                            if (parI == null) {
+                                                sendError(response, "Query " + resEx.id_query + " " + resEx.name_query + " parameter not specified " + arPar[i]);
+                                            }
+                                            sql = sql.replace("%" + arPar[i] + "%", parI);
+                                        }
+                                    }
+                                    resMob = queryDB.getQueryList(sql);
+                                    sendResult(response, resMob);
+                                    break;
                             }
                             break;
                     }
                     break;
             }
+    }
+    
+    public int needToLogin() {
+        return 1;
     }
     
 }

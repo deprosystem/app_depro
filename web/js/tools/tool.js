@@ -208,7 +208,7 @@ function readFile(ext, cbResult) {
         let reader = new FileReader()
         reader.onload = function() {
             closeWindow(buttonCancel);
-            cbResult(reader.result, el_first);
+            cbResult.csvParse(reader.result, el_first);
         }
         reader.readAsText(file);
     }, true);

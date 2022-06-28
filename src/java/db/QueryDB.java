@@ -18,9 +18,9 @@ public class QueryDB extends BaseDB {
     public long createQuery(Query qu, String schema) {
         long res = -1;
         try (Connection connection = getDBConnection(); Statement statement = connection.createStatement()) {
-            String str = "INSERT INTO " + schema + "._querys_meta (type_query, name_query, origin_query, sql_query, param_query, err_1, err_2) VALUES ('"
+            String str = "INSERT INTO " + schema + "._querys_meta (type_query, name_query, origin_query, sql_query, param_query, err_1, err_2, list_where, orderBy) VALUES ('"
                     + qu.type_query + "','" + qu.name_query + "','" + qu.origin_query + "','" + qu.sql_query + "','" + qu.param_query + "','" 
-                    + qu.err_1 + "','" + qu.err_2 + "');";
+                    + qu.err_1 + "','" + qu.err_2 + "','" + qu.listWhere + "','" + qu.orderBy + "');";
 //System.out.println("createQuery SQL="+str+"<<");
             int updateCount = statement.executeUpdate(str, Statement.RETURN_GENERATED_KEYS);
             try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
@@ -45,8 +45,9 @@ public class QueryDB extends BaseDB {
             nn = "', name_query='" + qu.name_query;
         }
         strUpd += "type_query ='" + qu.type_query +  nn +  "', origin_query='" + qu.origin_query 
-                +  "', sql_query='" + qu.sql_query +  "', param_query='" + qu.param_query +  "', err_1='" + qu.err_1
+                +  "', sql_query='" + qu.sql_query +  "', param_query='" + qu.param_query +  "', err_1='" + qu.err_1 + "', list_where='" + qu.listWhere + "', orderBy='" + qu.orderBy 
                 + "' WHERE id_query = " + qu.id_query;
+//System.out.println("changeQuery strUpd="+strUpd+"<<");
         try (Connection connection = getDBConnection(); Statement statement = connection.createStatement()) {
             statement.executeUpdate(strUpd);
         } catch (SQLException | ClassNotFoundException ex) {
@@ -82,6 +83,9 @@ public class QueryDB extends BaseDB {
                 res.sql_query = result.getString("sql_query");
                 res.param_query = result.getString("param_query");
                 res.err_1 = result.getString("err_1");
+                res.err_2 = result.getString("err_2");
+                res.listWhere = result.getString("list_where");
+                res.orderBy = result.getString("orderBy");
             }
         } catch (SQLException | ClassNotFoundException ex) {
             System.out.println("getQueryRecord error="+ex);

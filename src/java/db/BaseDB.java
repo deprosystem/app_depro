@@ -47,7 +47,7 @@ public class BaseDB {
         if (request.getServletContext().getRealPath("").indexOf(File.separator) != 0) {
             urlDB = "jdbc:postgresql://localhost:5001/";
         } else {
-            urlDB = "jdbc:postgresql://localhost:5432/";
+            urlDB = "jdbc:postgresql://localhost:5432/"; // 2147483647
         }
         Class.forName("org.postgresql.Driver");
         return DriverManager.getConnection (urlDB + "clients", "clients", "clients");

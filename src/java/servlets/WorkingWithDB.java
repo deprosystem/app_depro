@@ -49,6 +49,11 @@ public class WorkingWithDB extends BaseServlet {
                     sendError(response, "Schema delete error " + e.toString());
                 }
                 break;
+            case "/db/addField":
+                String schema = request.getHeader("schemDB");
+                clientsDB.addField(schema);
+                sendResultOk(response);
+                break;
         }
     }
 

@@ -5,7 +5,8 @@ var scrollTables;
 var debagStatus;
 
 function initiale() {
-    debagStatus = window.location.hostname.startsWith("deb-");
+//console.log("window.location.hostname="+window.location.hostname+"<<");
+    debagStatus = window.location.hostname.startsWith("deb-") || window.location.hostname == "localhost";
     formMenuEl();
     if (debagStatus) {
         statusDebagView.style.display = "block";

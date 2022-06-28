@@ -3,7 +3,9 @@ var stringExportRes;
 
 listMenu[0] = {nameM : 'Images', dependProject : true};
 listMenu[0].children = new Array(
-        {nameI : 'Upload image', func : uploadImage, dependProject : true});
+        {nameI : 'Upload image', func : uploadImage, dependProject : true},
+//        {nameI : 'add field orderBy', func : addOrder, dependProject : true}
+    );
 
         
 function formMenuEl() {
@@ -41,6 +43,14 @@ function formMenuEl() {
 
 function uploadImage() {
     sendImageZip();
+}
+
+function addOrder() {
+    doServer("POST", "db/addField", cbAddOrder, "");
+}
+
+function cbAddOrder(res) {
+    
 }
 
 function newElM(name) {

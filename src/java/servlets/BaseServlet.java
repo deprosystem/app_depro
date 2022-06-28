@@ -91,25 +91,7 @@ System.out.println("query="+ds.query);
             }
         }
     }
-/*
-    protected void process(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        baseDb = new BaseDB(request);
-        request.setCharacterEncoding("UTF-8");
-        response.setContentType("text/html;charset=UTF-8");
-        response.setHeader("Access-Control-Allow-Origin", "*");
-        DataServlet ds = new DataServlet();
-        ds.schema = request.getHeader("schemDB");
-//        TokenUser tu;
-        
-        ds.query = request.getRequestURI().substring(request.getContextPath().length());
-        ds.patchOutsideProject = getPatchOutsideProject(request);
-//System.out.println("ds.patchOutsideProject="+ds.patchOutsideProject+"<<<");
-System.out.println("query="+ds.query);
-        processRequest(request, response, ds);
 
-    }
-*/
     public String getPatchOutsideProject(HttpServletRequest request) {
         String st = request.getServletContext().getRealPath("");
         if (st.indexOf(File.separator) != 0) {
@@ -389,6 +371,25 @@ System.out.println("query="+ds.query);
         }
     }
     
+    public String escapingQuotes(String stQ) {
+        int i;
+        String quote = "\"";
+        String stRes = "";
+        int iL = stQ.length();
+        int j = 0;
+        String a = "\\";
+        do {
+            i = stQ.indexOf(quote, j);
+            if (i > -1) {
+                stRes += stQ.substring(j, i) + a + quote;
+                j = i + 1;
+            } else {
+                stRes += stQ.substring(j, iL);
+            }
+        } while (i > 0);
+        return stRes;
+    }
+    
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -406,7 +407,7 @@ System.out.println("query="+ds.query);
 //System.out.println("QQ Access-Control-Allow-Origin");
         response.setStatus (HttpServletResponse.SC_OK);
 //        response.setHeader("Access-Control-Allow-Origin", "http://localhost:8080 https://ide.deprosystem.com/");
-System.out.println("Access-Control-Allow-Origin"+"*");
+//System.out.println("Access-Control-Allow-Origin"+"*");
         response.setHeader("Access-Control-Allow-Origin", "*");
         response.setHeader("Access-Control-Allow-Methods", "GET, POST");
         response.setHeader("Access-Control-Allow-Headers", "schemDB, auth-token, Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");

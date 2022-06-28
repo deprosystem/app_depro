@@ -1,5 +1,6 @@
 function EditTable(meta, data, domEl, dataTitle, dataNumb, footer, obrSave) {
-    let edData, edMeta, edDomEl;
+    let edData, edDomEl;
+//    this.edMeta;
     let edObrSave = obrSave;
     let widthTabl;
     let lineChangeWidthCell;
@@ -23,8 +24,10 @@ function EditTable(meta, data, domEl, dataTitle, dataNumb, footer, obrSave) {
     if (meta == null) {
         return null;
     };
-    edMeta = meta.description;
-    let ikM = edMeta.length;
+    let self = this;
+    self.edMeta = meta.description;
+//    this.edMeta = meta.description;
+    let ikM = self.edMeta.length;
     if (domEl == null) {
         return null;
     }
@@ -53,7 +56,9 @@ function EditTable(meta, data, domEl, dataTitle, dataNumb, footer, obrSave) {
     footer.appendChild(csvEksport);
     footer.appendChild(saveControl);
     
-    formEditTab();
+    
+    
+//    formEditTab();
     
     function formEditTab() {
         ikD = edData.length;
@@ -68,7 +73,7 @@ function EditTable(meta, data, domEl, dataTitle, dataNumb, footer, obrSave) {
         primaryKayName = "";
         for (let i = 0; i < ikM; i++) {
             dv = document.createElement('div');
-            let item = edMeta[i];
+            let item = self.edMeta[i];
             dv.innerHTML = item.title;
             let len = item.length;
             switch (item.type) {
@@ -135,7 +140,7 @@ function EditTable(meta, data, domEl, dataTitle, dataNumb, footer, obrSave) {
                 row.addEventListener("mouseout", function(event){mouseoutTr(event)}, true);
                 createCellNum(j);
                 for (let i = 0; i < ikM; i++) {
-                    let met = edMeta[i];
+                    let met = self.edMeta[i];
                     col = createCol(i, met, item[met.name]);
 //                    col = createCol(i, item[met.name]);
                     if (firstElem == null) {
@@ -203,7 +208,8 @@ function EditTable(meta, data, domEl, dataTitle, dataNumb, footer, obrSave) {
     }
     
     function addCsv(e) {
-        readFile(".csv", csvParse);
+        readFile(".csv", self);
+//        readFile(".csv", csvParse);
     }
     
     function exportCsv(e) {
@@ -229,7 +235,7 @@ function EditTable(meta, data, domEl, dataTitle, dataNumb, footer, obrSave) {
         save.addEventListener("click", function(){closeWindow(save);}, true);
     }
     
-    function csvParse(strCSV, elFirst) {
+    self.csvParse = function (strCSV, elFirst) {
         let first = false;
         if (elFirst != null && elFirst.src.indexOf("check-sel") > -1) {
             first = true;
@@ -244,32 +250,23 @@ function EditTable(meta, data, domEl, dataTitle, dataNumb, footer, obrSave) {
         if (first) {
             beginCsv = 1;
             listFieldCSV = arRow[0].split(";");
+            let jk = listFieldCSV.length;
+            let countCSV = 0;;
             for (let i = 0; i < ikM; i++) {
-//                dv = document.createElement('div');
-                let item = edMeta[i];
+                let item = self.edMeta[i];
                 listFieldTab.push(item.name);
-//console.log("IIII="+i+" NNNNN="+item.name+"<<");
-                
-            }
-            let ik = listFieldCSV.length;
-            let sep = "";
-            for (let i = 0; i < ik; i++) {
-                let nn = listFieldCSV[i];
-//console.log("  FF IIII="+i+" NNNNN="+nn+"<<");
-                let noF = true;
-                for (let j = 0; j < ikM; j++) {
-                    if (nn == listFieldTab[j]) {
-                        listLink[i] = j;
-                        noF = false;
+                let nn = item.name;
+                let num = -1;
+                for (let j = 0; j < jk; j++) {
+                    if (listFieldCSV[j] == nn) {
+                        num = j;
+                        countCSV ++;
                         break;
                     }
                 }
-                if (noF) {
-                    listNoField += sep + nn;
-                    sep = ", ";
-                }
+                listFieldTab[i] = num;
             }
-            if (listNoField.length > 0) {
+            if (countCSV < jk) {
                 dialogError("Error!", "There are no fields in the table " + listNoField);
                 return;
             }
@@ -279,8 +276,6 @@ function EditTable(meta, data, domEl, dataTitle, dataNumb, footer, obrSave) {
                 listLink[i] = i;
             }
         }
-        
-        
         let lastRow;
         let ch = edDomEl.children;
         if (ch != null && ch.length > 0) {
@@ -292,13 +287,11 @@ function EditTable(meta, data, domEl, dataTitle, dataNumb, footer, obrSave) {
             }
         }
 
-//        let arRow = strCSV.split(/\r?\n|\r/);
         ik = arRow.length - 1;
         let num = 0;
         if (edDomEl.children != null) {
             num = edDomEl.children.length;
         }
-//console.log("num="+num+" beginCsv="+beginCsv);
         for (let i = beginCsv; i < ik; i++) {
             let item = formItemCSV(arRow[i]);
             let itemLen = item.length;
@@ -312,10 +305,10 @@ function EditTable(meta, data, domEl, dataTitle, dataNumb, footer, obrSave) {
             row.addEventListener("mouseout", function(event){mouseoutTr(event)}, true);
             createCellNum(i + num - beginCsv);
             setStatus(i + num - beginCsv, 2);
-//            let jk = edMeta.length;
+            let edM = meta.description;
             for (let k = 0; k < ikM; k++) {
-                let j = listLink[k];
-                let met = edMeta[j];
+                let j = listFieldTab[k];
+                let met = edM[k];
                 let vv = null;
                 if (j < itemLen) {
                     vv = item[j];
@@ -587,7 +580,7 @@ function EditTable(meta, data, domEl, dataTitle, dataNumb, footer, obrSave) {
     
     function selecktImgFile(img) {
         cell = img.parentElement;
-        sendImageFile(meta.name_table, edMeta[cell.numField].name, img);
+        sendImageFile(meta.name_table, self.edMeta[cell.numField].name, img);
     }
 
     function setImgEditData(i, par) {
@@ -797,7 +790,7 @@ function EditTable(meta, data, domEl, dataTitle, dataNumb, footer, obrSave) {
         createCellNum(num);
         setStatus(num, 2);
         for (let i = 0; i < ikM; i++) {
-            let met = edMeta[i];
+            let met = self.edMeta[i];
             let col = createCol(i, met, null);
             if (firstElem == null) {
                 let ff = col.getElementsByTagName("input");
@@ -876,7 +869,7 @@ function EditTable(meta, data, domEl, dataTitle, dataNumb, footer, obrSave) {
         let res = "(";
         let sep = "";
         for (let i = 0; i < ikM; i++) {
-            let item = edMeta[i];
+            let item = self.edMeta[i];
             if (item.type.indexOf("erial") == -1) {     //  not    Serial or Bigserial
                 res += sep + item.name;
                 sep = ", ";
@@ -890,7 +883,7 @@ function EditTable(meta, data, domEl, dataTitle, dataNumb, footer, obrSave) {
         let res = "(";
         let sep = "";
         for (let i = 0; i < ikM; i++) {
-            let item = edMeta[i];
+            let item = self.edMeta[i];
             let val;
             let inp;
             if (item.type.indexOf("erial") == -1) {     //  not    Serial or Bigserial
@@ -941,7 +934,7 @@ function EditTable(meta, data, domEl, dataTitle, dataNumb, footer, obrSave) {
         let primaryN;
         let primaryV;
         for (let i = 0; i < ikM; i++) {
-            let item = edMeta[i];
+            let item = self.edMeta[i];
             let val;
             let inp;
             let dat_i = dat.getElementsByClassName("col")[i];
@@ -991,4 +984,6 @@ function EditTable(meta, data, domEl, dataTitle, dataNumb, footer, obrSave) {
         }
         return res + " WHERE " + primaryN + " = " + primaryV;
     }
+    
+    formEditTab();
 }

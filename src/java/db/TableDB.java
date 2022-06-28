@@ -236,7 +236,7 @@ public class TableDB extends BaseDB {
             String pKey = "";
             String ind = "";
             for (Field f : lf) {
-System.out.println("createTable FFFF="+gson.toJson(f)+"<<");
+//System.out.println("createTable FFFF="+gson.toJson(f)+"<<");
                 sql += sep + f.name;
                 switch (f.type) {
                     case "Gallery":
