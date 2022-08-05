@@ -95,6 +95,7 @@ public class QueryDB extends BaseDB {
 //    public long id_query;
 //    public String type_query, name_query, origin_query, sql_query, param_query;
     
+/*
     public ErrorSQL insertInTab(String sql, String id) {
         long res = -1;
         ErrorSQL erSql = new ErrorSQL();
@@ -109,10 +110,11 @@ public class QueryDB extends BaseDB {
                 }
             } 
         } catch (SQLException | ClassNotFoundException ex) {
-            System.out.println("insertInTab error="+ex);
+            System.out.println("QueryDB insertInTab error="+ex);
             erSql.errorMessage = ex.toString();
         }
         erSql.id = res;
         return erSql;
     }
+*/
 }

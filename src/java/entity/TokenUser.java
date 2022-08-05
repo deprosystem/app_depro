@@ -2,5 +2,6 @@ package entity;
 
 public class TokenUser {
     public long userId, dateCreate;
-    public String token, userResurseInd;
+    public String token;
+//    public String token, userResurseInd;
 }

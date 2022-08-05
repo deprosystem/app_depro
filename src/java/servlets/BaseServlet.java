@@ -52,7 +52,7 @@ public abstract class BaseServlet extends HttpServlet{
         String[] ar = (" " + ds.query).split("/");
         ds.schema = ar[2];
         ds.patchOutsideProject = getPatchOutsideProject(request);
-System.out.println("query="+ds.query);
+System.out.println("query="+ds.query+" schema="+ds.schema);
         int need = needToLogin();
         if (need == 0) {
             processRequest(request, response, ds);
@@ -67,7 +67,7 @@ System.out.println("query="+ds.query);
             if (ds.token != null && ds.token.length() > 0) {
                 tu = baseDb.getUserByToken(ds.token, ds.schema);
                 ds.userId = tu.userId;
-                ds.userResurseInd = tu.userResurseInd;
+//                ds.userResurseInd = tu.userResurseInd;
                 if (need == 1) {
                     processRequest(request, response, ds);
                 } else {
@@ -404,10 +404,8 @@ System.out.println("query="+ds.query);
     
     @Override
     protected void doOptions(HttpServletRequest request, HttpServletResponse response) {
-//System.out.println("QQ Access-Control-Allow-Origin");
+//System.out.println("QQ Access-Control-Allow-Origin 0000000000000000000000000");
         response.setStatus (HttpServletResponse.SC_OK);
-//        response.setHeader("Access-Control-Allow-Origin", "http://localhost:8080 https://ide.deprosystem.com/");
-//System.out.println("Access-Control-Allow-Origin"+"*");
         response.setHeader("Access-Control-Allow-Origin", "*");
         response.setHeader("Access-Control-Allow-Methods", "GET, POST");
         response.setHeader("Access-Control-Allow-Headers", "schemDB, auth-token, Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");

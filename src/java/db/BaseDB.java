@@ -308,10 +308,11 @@ System.out.println("pathOut-"+pathOut+"<<");
         TokenUser tu = new TokenUser();
         tu.userId = -1;
         try (Connection connection = getDBConnection(); Statement statement = connection.createStatement()) {
+//System.out.println("getUserByToken SQL="+SQL.getUserToken_1 + schema + SQL.getUserToken_3 + inQuotes(token) + ";");
             ResultSet result = statement.executeQuery(SQL.getUserToken_1 + schema + SQL.getUserToken_3 + inQuotes(token) + ";");
             if (result.next()) {
                 tu.userId = result.getLong("user_id");
-                tu.userResurseInd = result.getString("user_resurse_ind");
+//                tu.userResurseInd = result.getString("user_resurse_ind");
                 tu.token = result.getString("token");
                 tu.dateCreate = result.getLong("date_create");
             }
@@ -335,7 +336,7 @@ System.out.println("pathOut-"+pathOut+"<<");
                 }
             } 
         } catch (SQLException | ClassNotFoundException ex) {
-            System.out.println("insertInTab error="+ex);
+            System.out.println("BaseDB insertInTab error="+ex);
             erSql.errorMessage = ex.toString();
         }
         erSql.id = res;
@@ -348,7 +349,7 @@ System.out.println("pathOut-"+pathOut+"<<");
         try (Connection connection = getDBConnection(); Statement statement = connection.createStatement()) {
             statement.executeUpdate(sql);
         } catch (SQLException | ClassNotFoundException ex) {
-            System.out.println("insertInTab error="+ex);
+            System.out.println("updateInTab error="+ex);
             erSql.errorMessage = ex.toString();
         }
         return erSql;

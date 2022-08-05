@@ -331,14 +331,16 @@ public class Querys extends BaseServlet {
                                                 ff += sep + item.name;
                                                 if (item.type == FieldSimpl.TYPE_STRING) {
                                                     valSt = String.valueOf(item.value);
-                                                    if (valSt.equals("!@#$%^&<>")) {
+                                                    if (valSt.equals("\u0000id")) {
                                                         if (ds.userId < 0) {
                                                             sendError(response, Constants.ERR_NO_AUTCH);
                                                         } else {
-                                                            valSt = String.valueOf(ds.userId);
+//                                                            valSt = String.valueOf(ds.userId);
+                                                            vv += sep + ds.userId;
                                                         }
+                                                    } else {
+                                                        vv += sep + "'" + valSt + "'";
                                                     }
-                                                    vv += sep + "'" + valSt + "'";
                                                 } else {
                                                     vv += sep + item.value;
                                                 }
@@ -346,6 +348,7 @@ public class Querys extends BaseServlet {
                                         }
 
                                         sql += " (" + ff + ") VALUES (" + vv + ")";
+System.out.println("INSERT SQL="+sql+"<<");
                                         ErrorSQL errSql = queryDB.insertInTab(sql, nameId);
                                         if (errSql.id > -1) {
                                             String result = "{\"" + nameId + "\":" + errSql.id;
