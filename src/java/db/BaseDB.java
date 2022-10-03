@@ -54,6 +54,7 @@ public class BaseDB {
     }
 
     public String getQueryList(String sql) {
+System.out.println("getQueryList SQL="+sql+"<<");
         StringBuilder result = new StringBuilder(2048);
         result.append("[");
         try (Connection connection = getDBConnection(); Statement statement = connection.createStatement()) {

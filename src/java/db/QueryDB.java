@@ -92,29 +92,5 @@ public class QueryDB extends BaseDB {
         }
         return res;
     }
-//    public long id_query;
-//    public String type_query, name_query, origin_query, sql_query, param_query;
-    
-/*
-    public ErrorSQL insertInTab(String sql, String id) {
-        long res = -1;
-        ErrorSQL erSql = new ErrorSQL();
-        try (Connection connection = getDBConnection(); Statement statement = connection.createStatement()) {
-            int updateCount = statement.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
-            try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
-                if (generatedKeys.next()) {
-                    res = generatedKeys.getLong(id);
-                } else {
-                    System.out.println("insertInTab Creating failed, no ID obtained");
-                    erSql.errorMessage = "insertInTab Creating failed, no ID obtained";
-                }
-            } 
-        } catch (SQLException | ClassNotFoundException ex) {
-            System.out.println("QueryDB insertInTab error="+ex);
-            erSql.errorMessage = ex.toString();
-        }
-        erSql.id = res;
-        return erSql;
-    }
-*/
+
 }

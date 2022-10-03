@@ -65,7 +65,7 @@ public class Autch extends BaseServlet {
                 if (resOut.err) {
                     sendError(response, stErrorQu);
                 }
-                if ( ! pas.equals(resOut.password)) {
+                if ( pas == null || ( ! pas.equals(resOut.password))) {
                     sendError(response, stErrorQu);
                 } else {
                     count = 0;

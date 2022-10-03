@@ -50,7 +50,9 @@ public abstract class BaseServlet extends HttpServlet{
         ds.schema = request.getHeader("schemDB");
         ds.query = request.getRequestURI().substring(request.getContextPath().length());
         String[] ar = (" " + ds.query).split("/");
-        ds.schema = ar[2];
+        if (ds.schema == null) {
+            ds.schema = ar[2];
+        }
         ds.patchOutsideProject = getPatchOutsideProject(request);
 System.out.println("query="+ds.query+" schema="+ds.schema);
         int need = needToLogin();

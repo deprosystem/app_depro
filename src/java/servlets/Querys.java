@@ -41,12 +41,13 @@ public class Querys extends BaseServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response, DataServlet ds) {
             QueryDB queryDB = new QueryDB(request);
             Query qu;
-            String schema = request.getHeader("schemDB");
+            String schema = ds.schema;
             String res;
             String data = null;
             FieldSimpl fsimpl = null;
             JsonSimple js = new JsonSimple();
             Record rec = null;
+//System.out.println("processRequest ds.userId="+ds.userId+"<<");
             switch (ds.query) {
                 case "/query/create":
                     qu = null;
@@ -164,7 +165,7 @@ public class Querys extends BaseServlet {
                                 case "SELECT":
                                     sql = resEx.sql_query;
                                     param_1 = resEx.param_query;
-                                    
+//System.out.println("processRequest SELECT ds.userId="+ds.userId+"<<");
                                     data = null;
                                     NameVal[] nameVal;
                                     try {
@@ -209,26 +210,31 @@ public class Querys extends BaseServlet {
                                     if (param_1 != null && param_1.length() > 0) {
                                         String[] arPar = param_1.split(",");
                                         int ik = arPar.length;
-//                                            ListWhere arWhere = gson.fromJson(resEx.listWhere, ListWhere.class);
-//                                            int jkW = arWhere.size();
                                         for (int i = 0; i < ik; i++) {
                                             String namePar = arPar[i];
                                             String parI = null;
+                                            String nameParam_1 = namePar;
+                                            int i_n = namePar.indexOf("=");
+                                            if (i_n > -1) {
+                                                nameParam_1 = namePar.substring(0, i_n);
+                                            }
                                             for (int p = 0; p < pk; p++) {
                                                 NameVal nv = nameVal[p];
-                                                if (nv.name.equals(namePar)) {
+                                                if (nv.name.equals(nameParam_1)) {
                                                     parI = nv.value;
                                                     break;
                                                 }
                                             }
-                                            if (parI.equals("!@#$%^&<>")) {
+//System.out.println("processRequest 111 SELECT ds.userId="+ds.userId+"<< parI="+parI+"<< nameParam_1="+nameParam_1+"<<");
+                                            if (parI != null && parI.equals(Constants.prefixProfileParam + "id_user")) {
                                                 if (ds.userId < 0) {
                                                     sendError(response, Constants.ERR_NO_AUTCH);
                                                 } else {
                                                     parI = String.valueOf(ds.userId);
                                                 }
                                             }
-                                            String namePar5 = "%" + namePar + "%";
+//System.out.println("nameParam_1="+nameParam_1+"<< parI="+parI+"<<");
+                                            String namePar5 = "%" + nameParam_1 + "%";
                                             for (int j = 0; j < jkW; j++) {
                                                 String whereJ = arWhere.get(j);
                                                 if (whereJ.indexOf(namePar5) > -1) {
@@ -348,7 +354,6 @@ public class Querys extends BaseServlet {
                                         }
 
                                         sql += " (" + ff + ") VALUES (" + vv + ")";
-System.out.println("INSERT SQL="+sql+"<<");
                                         ErrorSQL errSql = queryDB.insertInTab(sql, nameId);
                                         if (errSql.id > -1) {
                                             String result = "{\"" + nameId + "\":" + errSql.id;
@@ -386,6 +391,106 @@ System.out.println("INSERT SQL="+sql+"<<");
                                     }
                                     resMob = queryDB.getQueryList(sql);
                                     sendResult(response, resMob);
+                                    break;
+                                    
+                                    
+                                case "DELETE":
+                                    sql = resEx.sql_query;
+                                    param_1 = resEx.param_query;
+//System.out.println("processRequest SELECT ds.userId="+ds.userId+"<<");
+                                    data = null;
+//                                    NameVal[] nameVal;
+                                    try {
+                                        data = getStringRequest(request);
+                                    } catch (IOException ex) { }
+//                                    int pk;
+                                    if (data != null && data.length() > 0) {
+                                        try {
+                                            fsimpl = js.jsonToModel(data);
+                                        } catch (json_simple.JsonSyntaxException ex) {
+                                            System.out.println("query DELETE JsonSyntaxException=" + ex);
+                                            sendError(response, "query DELETE JsonSyntaxException=" + ex.toString());
+                                        }
+                                        if (fsimpl == null) {
+                                            break;
+                                        }
+                                        rec = (Record) fsimpl.value;
+                                        pk = rec.size();
+                                        nameVal = new NameVal[pk];
+                                        for (int p = 0; p < pk; p++) {
+                                            FieldSimpl ff = rec.get(p);
+                                            NameVal nv = new NameVal();
+                                            nv.name = ff.name;
+                                            nv.value = (String) ff.value;
+                                            nameVal[p] = nv;
+                                        }
+                                    } else {
+                                        Map<String, String[]> mapPar = request.getParameterMap();
+                                        int i = 0;
+                                        pk = mapPar.size();
+                                        nameVal = new NameVal[pk];
+                                        for(Map.Entry<String, String[]> entry: mapPar.entrySet()) {
+                                            NameVal nv = new NameVal();
+                                            nv.name = entry.getKey();
+                                            nv.value = entry.getValue()[0];
+                                            nameVal[i] = nv;
+                                            i++;
+                                        }
+                                    }
+                                    arWhere = gson.fromJson(resEx.listWhere, ListWhere.class);
+                                    jkW = arWhere.size();
+                                    if (param_1 != null && param_1.length() > 0) {
+                                        String[] arPar = param_1.split(",");
+                                        int ik = arPar.length;
+                                        for (int i = 0; i < ik; i++) {
+                                            String namePar = arPar[i];
+                                            String parI = null;
+                                            String nameParam_1 = namePar;
+                                            int i_n = namePar.indexOf("=");
+                                            if (i_n > -1) {
+                                                nameParam_1 = namePar.substring(0, i_n);
+                                            }
+                                            for (int p = 0; p < pk; p++) {
+                                                NameVal nv = nameVal[p];
+                                                if (nv.name.equals(nameParam_1)) {
+                                                    parI = nv.value;
+                                                    break;
+                                                }
+                                            }
+//System.out.println("processRequest 111 SELECT ds.userId="+ds.userId+"<< parI="+parI+"<< nameParam_1="+nameParam_1+"<<");
+                                            if (parI != null && parI.equals(Constants.prefixProfileParam + "id_user")) {
+                                                if (ds.userId < 0) {
+                                                    sendError(response, Constants.ERR_NO_AUTCH);
+                                                } else {
+                                                    parI = String.valueOf(ds.userId);
+                                                }
+                                            }
+//System.out.println("nameParam_1="+nameParam_1+"<< parI="+parI+"<<");
+                                            String namePar5 = "%" + nameParam_1 + "%";
+                                            for (int j = 0; j < jkW; j++) {
+                                                String whereJ = arWhere.get(j);
+                                                if (whereJ.indexOf(namePar5) > -1) {
+                                                    if (parI == null) {
+                                                        arWhere.set(j, "");
+                                                    } else {
+                                                        arWhere.set(j, whereJ.replace(namePar5, parI));
+                                                    }
+//                                                    break;
+                                                }
+                                            }
+                                        }
+                                    }
+                                    sepW = " WHERE ";
+                                    for (int j = 0; j < jkW; j++) {
+                                        String whereJ = arWhere.get(j);
+                                        if (whereJ.length() > 0) {
+                                            sql += sepW + whereJ;
+                                            sepW = " AND ";
+                                        }
+                                    }
+System.out.println("DELETE SQL="+sql);
+//                                    resMob = queryDB.getQueryList(sql);
+//                                    sendResult(response, resMob);
                                     break;
                             }
                             break;
