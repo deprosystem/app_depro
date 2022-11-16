@@ -26,6 +26,7 @@ function callEditTable(z) {
 }
 
 function cbListData(res) {
+//console.log("RES="+res);
     let item = listTables[indSelectTable];
     let fields = JSON.parse(item.fields_table);
 //    fields.unshift({id_field:0, name:"id_" + item.name_table, type:"Bigserial", title:"", key:true});
@@ -46,6 +47,7 @@ function cbListData(res) {
         listField.push(itemF);
     }
     let metaData = {titleForm:item.title_table, name_table:item.name_table, description:listField};
+//console.log("RES="+res);
     let dat = JSON.parse(res);
     editDataWind(metaData, dat, cbEditTable, 200, 450, 300);
 }

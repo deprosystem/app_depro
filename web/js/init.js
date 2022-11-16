@@ -3,10 +3,12 @@ var listTablesView;
 var listTables = null;
 var scrollTables;
 var debagStatus;
+var isLocalHost;
 
 function initiale() {
 //console.log("window.location.hostname="+window.location.hostname+"<<");
     debagStatus = window.location.hostname.startsWith("deb-") || window.location.hostname == "localhost";
+    isLocalHost = window.location.hostname == "localhost";
     formMenuEl();
     if (debagStatus) {
         statusDebagView.style.display = "block";

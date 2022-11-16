@@ -1,13 +1,15 @@
 var backPathImg, //     ikon
         stringPathImg, stringFolder, viewPathImg;
-var viewDataImg, listFileImg, preViewImage, pathFileImg;
+var viewDataImg, viewDataGal, listFileImg, preViewImage, preViewGal, pathFileImg;
+var listEditGal, positionEditGal;
 var selectFileIMG, selectFilePosition;
 var timeoutDBLclickIMG;
 var viewElementImg;
+var localURL= "";
 
 function sendImageFile(nameTable, nameField, el) {
     let windMenu = formWind(350, 220, 40, 250, "Choose a file with an image");
-    let hidesFooter, hidesInput;
+    let hidesFooter, hidesInput, inputLink;
     let inputFile = newDOMelement('<input type="file" accept="image/*" name="imgFile" multiple style="display: none"/>');
     windMenu.appendChild(inputFile);
     let contInp = newDOMelement('<div style="margin-top:20px;margin-left:15px;"></div');
@@ -15,7 +17,7 @@ function sendImageFile(nameTable, nameField, el) {
     let inputFileView = newElementFromString('<input class="input_style" type="text" readonly style="width: 200px;float:left;height:28px"/>');
     contInp.appendChild(inputFileView);
     let buttonFileView = newElementFromString('<div class="button_blue">'
-                +'<div style="text-align:center;margin-top:7px;color:#fff">My computer </div>'+'</div>');
+                +'<div style="text-align:center;margin-top:7px;color:#fff">My computer</div>'+'</div>');
     contInp.appendChild(buttonFileView);
     buttonFileView.addEventListener("click", function(){hidesFooter.style.display = "none"; hidesInput.style.display = "none"; inputFile.click();}, true);
     inputFile.addEventListener("change", function(){inputFileView.value = inputFile.files[0].name;}, true);
@@ -40,6 +42,19 @@ function sendImageFile(nameTable, nameField, el) {
     buttonServer.addEventListener("click", function(){closeWindow(buttonCancel); getImageServer(el);}, true);
     windMenu.appendChild(hidesFooter);
     windMenu.appendChild(hidesInput);
+    
+    inputLink = newDOMelement('<div style="position:absolute;left:0;right:0;top:70px;height:50px;border-top:1px solid #1dace9";background-color:#fee"></div>');
+    inputLink.append(newDOMelement('<div style="margin-left:10px;margin-top:5px;color: #8199A5;font-size: 10px;">Link</div>'));
+    let inpEl = newDOMelement('<input class="input_style" type="text" style="width: 235px;float:left;clear:both;height:28px;margin-top:3px;margin-left:10px"/>');
+    inputLink.append(inpEl);
+    let buttonLink = createButtonBlue('Save link', 70);
+    buttonLink.style.marginTop = "4px";
+    buttonLink.style.marginLeft = "10px";
+    buttonLink.addEventListener("click", function(){setLink(inpEl, el);}, true);
+    inputLink.append(buttonLink);
+//    buttonLink.style.
+    windMenu.append(inputLink);
+    
     let paramForCB = {wind:windMenu, elImg:el};
     buttonSend.addEventListener("click", function(){
         let formData = new FormData ();
@@ -54,6 +69,95 @@ function sendImageFile(nameTable, nameField, el) {
         doServer("POST", "images/save", cbSendImageFile, formData, paramForCB, windMenu);
     }, true);
     buttonCancel.addEventListener("click", function(){closeWindow(buttonCancel);}, true);
+}
+
+function setLink(inp, el) {
+    if (inp.value != null && inp.value != "") {
+        setImageInEl(el, inp.value);
+        closeWindow(inp);
+    }
+}
+
+function editGalleryFile(nameTable, nameField, el) {
+    let hFooter = 56;
+    let wImgs = 510;
+    let windMenu = formWind(700, 350, 40, 250, "Editing images in the gallery");
+    backPathImg = newDOMelement('<IMG SRC="img/arrow_left.png" style="margin-left:10px;float:left;width:14px;height:14px;margin-top:5px;cursor:pointer">');
+    backPathImg.addEventListener("click", function(){backPath();}, true);
+    let wind = newDOMelement('<div style="position:absolute;top:0px;left:0;bottom:' + (hFooter +1) + 'px;right:0"></div>');
+    windMenu.appendChild(wind);
+    let listImg = newDOMelement('<div style="position:absolute;top:0;left:0;bottom:0;width:' + wImgs + 'px"></div>');
+    wind.appendChild(listImg);
+    preViewGal = newDOMelement('<IMG style="position:absolute;top:20px;width:180px;right:5px;height:100px;object-fit:contain">');
+    wind.appendChild(preViewGal);
+    let scrollImg = formViewScrolY(listImg);
+    viewDataGal = scrollImg.getElementsByClassName("viewData")[0];
+    
+    let footer = createFooter(hFooter);
+    windMenu.appendChild(footer);
+    let buttonSend = createButtonBlue('Save', 70);
+    footer.appendChild(buttonSend);
+    let buttonCancel = createButtonWeite('Cancel', 70);
+    footer.appendChild(buttonCancel);
+    let buttonDelete = createButtonWeite('Delete', 70);
+    footer.appendChild(buttonDelete);
+    buttonSend.addEventListener("click", function(){saveGal(el);closeWindow(buttonSend);}, true);
+    buttonDelete.addEventListener("click", function(){deleteGal()}, true);
+    buttonCancel.addEventListener("click", function(){closeWindow(buttonCancel);}, true);
+    listEditGal = el.adrImg.toString().split(",");
+    if (isLocalHost) {
+        localURL = "https://deb-apps.dp-ide.com/";
+    }
+    setListGal();
+    positionEditGal = 0;
+    preViewGal.src = localURL + listEditGal[0];
+}
+
+function setListGal() {
+    let ik = listEditGal.length;
+    if (listEditGal == null || listEditGal.length == 0) {
+        viewDataImg.innerHTML = '<div style="font-size:20px;margin-left:20px">No images</div>';
+        return;
+    }
+    viewDataGal.innerHTML = "";
+    for (let i = 0; i < ik; i++) {
+        let line = newDOMelement('<div style="height:24px;float:left;width:100%">' + listEditGal[i] + '</div>');
+        line.addEventListener("click", function(){selectLineGal(i)}, true);
+        viewDataGal.append(line);
+    }
+}
+
+function saveGal(el) {
+    el.adrImg = listEditGal.toString().split(",");
+    let cell = el.closest('.col');
+    cell.isEdit = true;
+    let row = cell.closest('.row');
+    row.isEdit = true;
+    if ( ! row.newRecord) {
+        setStatus(row.numRow, 1);
+    }
+}
+
+function deleteGal() {
+    listEditGal.splice(positionEditGal, 1);
+    setListGal();
+    
+//    viewDataGal.children[positionEditGal].remove();
+    let ik = listEditGal.length - 1;
+    if (ik > -1) {
+        if (positionEditGal > ik) {
+            positionEditGal = ik;
+        }
+        viewDataGal.children[positionEditGal].style.backgroundColor = "#DAF0FA";
+        preViewGal.src = localURL + listEditGal[positionEditGal];
+    }
+}
+
+function selectLineGal(i) {
+    viewDataGal.children[positionEditGal].style.backgroundColor = "";
+    positionEditGal = i;
+    viewDataGal.children[positionEditGal].style.backgroundColor = "#DAF0FA";
+    preViewGal.src = localURL + listEditGal[i];
 }
 
 function sendImageZip() {
@@ -233,7 +337,7 @@ function selectFileImage(el, i) {
     clearTimeout(timeoutDBLclickIMG);
     timeoutDBLclickIMG = null;
     let item = listFileImg[i];
-    setImageInEl(viewElementImg, "img_app/" + schema + "/" + stringPathImg + item.name)
+    setImageInEl(viewElementImg, "img_app/" + schema + "/" + stringPathImg + item.name);
     closeWindow(viewDataImg);
 }
 

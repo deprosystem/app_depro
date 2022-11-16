@@ -15,6 +15,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Paths;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -421,7 +425,7 @@ public class Querys extends BaseServlet {
                                             FieldSimpl ff = rec.get(p);
                                             NameVal nv = new NameVal();
                                             nv.name = ff.name;
-                                            nv.value = (String) ff.value;
+                                            nv.value = ff.value.toString();
                                             nameVal[p] = nv;
                                         }
                                     } else {
@@ -437,60 +441,71 @@ public class Querys extends BaseServlet {
                                             i++;
                                         }
                                     }
+                                    
                                     arWhere = gson.fromJson(resEx.listWhere, ListWhere.class);
                                     jkW = arWhere.size();
-                                    if (param_1 != null && param_1.length() > 0) {
-                                        String[] arPar = param_1.split(",");
-                                        int ik = arPar.length;
-                                        for (int i = 0; i < ik; i++) {
-                                            String namePar = arPar[i];
-                                            String parI = null;
-                                            String nameParam_1 = namePar;
-                                            int i_n = namePar.indexOf("=");
-                                            if (i_n > -1) {
-                                                nameParam_1 = namePar.substring(0, i_n);
-                                            }
-                                            for (int p = 0; p < pk; p++) {
-                                                NameVal nv = nameVal[p];
-                                                if (nv.name.equals(nameParam_1)) {
-                                                    parI = nv.value;
-                                                    break;
+                                    if (jkW > 0) {
+                                        if (param_1 != null && param_1.length() > 0) {
+                                            String[] arPar = param_1.split(",");
+                                            int ik = arPar.length;
+                                            for (int i = 0; i < ik; i++) {
+                                                String namePar = arPar[i];
+                                                String parI = null;
+                                                String nameParam_1 = namePar;
+                                                int i_n = namePar.indexOf("=");
+                                                if (i_n > -1) {
+                                                    nameParam_1 = namePar.substring(0, i_n);
                                                 }
-                                            }
-//System.out.println("processRequest 111 SELECT ds.userId="+ds.userId+"<< parI="+parI+"<< nameParam_1="+nameParam_1+"<<");
-                                            if (parI != null && parI.equals(Constants.prefixProfileParam + "id_user")) {
-                                                if (ds.userId < 0) {
-                                                    sendError(response, Constants.ERR_NO_AUTCH);
-                                                } else {
-                                                    parI = String.valueOf(ds.userId);
-                                                }
-                                            }
-//System.out.println("nameParam_1="+nameParam_1+"<< parI="+parI+"<<");
-                                            String namePar5 = "%" + nameParam_1 + "%";
-                                            for (int j = 0; j < jkW; j++) {
-                                                String whereJ = arWhere.get(j);
-                                                if (whereJ.indexOf(namePar5) > -1) {
-                                                    if (parI == null) {
-                                                        arWhere.set(j, "");
-                                                    } else {
-                                                        arWhere.set(j, whereJ.replace(namePar5, parI));
+                                                for (int p = 0; p < pk; p++) {
+                                                    NameVal nv = nameVal[p];
+                                                    if (nv.name.equals(nameParam_1)) {
+                                                        parI = nv.value;
+                                                        break;
                                                     }
-//                                                    break;
+                                                }
+    //System.out.println("processRequest 111 SELECT ds.userId="+ds.userId+"<< parI="+parI+"<< nameParam_1="+nameParam_1+"<<");
+                                                if (parI != null && parI.equals(Constants.prefixProfileParam + "id_user")) {
+                                                    if (ds.userId < 0) {
+                                                        sendError(response, Constants.ERR_NO_AUTCH);
+                                                    } else {
+                                                        parI = String.valueOf(ds.userId);
+                                                    }
+                                                }
+    //System.out.println("nameParam_1="+nameParam_1+"<< parI="+parI+"<<");
+                                                String namePar5 = "%" + nameParam_1 + "%";
+                                                for (int j = 0; j < jkW; j++) {
+                                                    String whereJ = arWhere.get(j);
+                                                    if (whereJ.indexOf(namePar5) > -1) {
+                                                        if (parI == null) {
+                                                            arWhere.set(j, "");
+                                                        } else {
+                                                            arWhere.set(j, whereJ.replace(namePar5, parI));
+                                                        }
+    //                                                    break;
+                                                    }
                                                 }
                                             }
                                         }
-                                    }
-                                    sepW = " WHERE ";
-                                    for (int j = 0; j < jkW; j++) {
-                                        String whereJ = arWhere.get(j);
-                                        if (whereJ.length() > 0) {
-                                            sql += sepW + whereJ;
-                                            sepW = " AND ";
+                                        sepW = " WHERE ";
+                                        for (int j = 0; j < jkW; j++) {
+                                            String whereJ = arWhere.get(j);
+                                            if (whereJ.length() > 0) {
+                                                sql += sepW + whereJ;
+                                                sepW = " AND ";
+                                            }
                                         }
+    //System.out.println("DELETE SQL="+sql);
+                                        int row = -1;
+                                        try (Connection connection = queryDB.getDBConnection(); Statement statement = connection.createStatement()) {
+                                            row = statement.executeUpdate(sql);
+                                        } catch (SQLException | ClassNotFoundException ex) {
+                                            System.out.println("DELETE error="+ex);
+                                            sendError(response, "DELETE error="+ex);
+                                        }
+                                        sendResult(response, "{\"row\":" + row + "}");
+                                    } else {
+                                        sendError(response, "DELETE error: No deletion conditions");
                                     }
-System.out.println("DELETE SQL="+sql);
-//                                    resMob = queryDB.getQueryList(sql);
-//                                    sendResult(response, resMob);
                                     break;
                             }
                             break;

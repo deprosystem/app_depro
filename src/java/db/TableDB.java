@@ -7,7 +7,13 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
@@ -287,6 +293,9 @@ public class TableDB extends BaseDB {
                         sql += " BOOLEAN";
                         break;
                 }
+                if (f.def != null && f.def.length() > 0) {
+                    sql += " DEFAULT " + f.def;
+                }
                 if (f.index != null && f.index) {
                     String un = "";
                     if (f.unique) {
@@ -348,7 +357,7 @@ public class TableDB extends BaseDB {
         try (Connection connection = getDBConnection(); Statement statement = connection.createStatement()) {
 //            String SQL = "SELECT * FROM " + schema + "." + name_table + " INTO OUTFILE " + pathFile + " FIELDS TERMINATED BY ',';";
             String copySQL = "COPY " + schema + "." + name_table + " TO '" + pathFile + "' csv header;";
-System.out.println("copySQL="+copySQL+"<<");
+//System.out.println("copySQL="+copySQL+"<<");
             statement.executeUpdate(copySQL);
         } catch (SQLException | ClassNotFoundException ex) {
             System.out.println("exportTable error="+ex);
@@ -368,7 +377,7 @@ System.out.println("copySQL="+copySQL+"<<");
                     str += sep + ts.datNew.get(i);
                     sep = ", ";
                 }
-System.out.println("saveData="+str+"<<");
+//System.out.println("saveData="+str+"<<");
                 res = statement.executeUpdate(str);
                 if (res < 0) {
                     return "saveData error= no insert Record";
@@ -381,7 +390,7 @@ System.out.println("saveData="+str+"<<");
                     str += sep + ts.dataDel.get(i);
                 }
                 str += ")";
-System.out.println("saveData DEL="+str+"<<");
+//System.out.println("saveData DEL="+str+"<<");
                 res = statement.executeUpdate(str);
                 if (res < 0) {
                     return "saveDeleteData error= no insert Record";
@@ -391,7 +400,9 @@ System.out.println("saveData DEL="+str+"<<");
                 ik = ts.dataEdit.size();
                 String stEd = "UPDATE " + schema + "." + ts.name_table + " SET ";
                 for (int i = 0; i < ik; i++) {
-                    statement.executeUpdate(stEd + ts.dataEdit.get(i));
+                    Timestamp timeS = new Timestamp(System.currentTimeMillis());
+                    String dd = "__date_edit = '" + timeS.toInstant().toString() + "', ";
+                    statement.executeUpdate(stEd + dd + ts.dataEdit.get(i));
                 }
             }
         } catch (SQLException | ClassNotFoundException ex) {

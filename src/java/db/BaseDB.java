@@ -17,9 +17,16 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
+import sun.util.calendar.BaseCalendar;
+import sun.util.calendar.ZoneInfo;
 
 public class BaseDB {
     public String urlDB;
@@ -54,7 +61,7 @@ public class BaseDB {
     }
 
     public String getQueryList(String sql) {
-System.out.println("getQueryList SQL="+sql+"<<");
+//System.out.println("getQueryList SQL="+sql+"<<");
         StringBuilder result = new StringBuilder(2048);
         result.append("[");
         try (Connection connection = getDBConnection(); Statement statement = connection.createStatement()) {
@@ -70,6 +77,9 @@ System.out.println("getQueryList SQL="+sql+"<<");
                 names[i] = rsmd.getColumnName(i);
                 types[i] = rsmd.getColumnType(i);
             }
+            Calendar cal = Calendar.getInstance();
+            TimeZone tz = cal.getTimeZone();
+            int offSet = tz.getRawOffset();
             while (res.next()) {
                 result.append(selRec + "{");
                 selField = "";
@@ -98,11 +108,28 @@ System.out.println("getQueryList SQL="+sql+"<<");
                             result.append(quote + stRes + quote);                           
                             break;
                         case 91:
-                            result.append(quote + res.getDate(i) + quote);
+                            Date dd = res.getDate(i);
+                            if (dd != null) {
+                                result.append(String.valueOf(dd.getTime() + offSet));
+                            } else {
+                                result.append("0");
+                            }
+                            break;
+                        case 92:
+                            Time tt = res.getTime(i);
+                            if (tt != null) {
+                                result.append(String.valueOf(tt.getTime() + offSet));
+                            } else {
+                                result.append("0");
+                            }
                             break;
                         case 93:
-//System.out.print("DDD="+res.getTimestamp(i));
-                            result.append(res.getTimestamp(i));
+                            Timestamp ts = res.getTimestamp(i);
+                            if (ts != null) {
+                                result.append(String.valueOf(ts.getTime() + offSet));
+                            } else {
+                                result.append("0");
+                            }
                             break;
                         case -7:
                             result.append(res.getBoolean(i));
@@ -135,6 +162,9 @@ System.out.println("getQueryList SQL="+sql+"<<");
                 names[i] = rsmd.getColumnName(i);
                 types[i] = rsmd.getColumnType(i);
             }
+            Calendar cal = Calendar.getInstance();
+            TimeZone tz = cal.getTimeZone();
+            int offSet = tz.getRawOffset();
             if (res.next()) {
                 selField = "";
                 for (int i = 1; i < count1; i++ ) {
@@ -159,6 +189,30 @@ System.out.println("getQueryList SQL="+sql+"<<");
                             }
                             String stRes = escapingQuotes(sst);
                             result.append(quote + stRes + quote);
+                            break;
+                        case 91:
+                            Date dd = res.getDate(i);
+                            if (dd != null) {
+                                result.append(String.valueOf(dd.getTime() + offSet));
+                            } else {
+                                result.append("0");
+                            }
+                            break;
+                        case 92:
+                            Time tt = res.getTime(i);
+                            if (tt != null) {
+                                result.append(String.valueOf(tt.getTime() + offSet));
+                            } else {
+                                result.append("0");
+                            }
+                            break;
+                        case 93:
+                            Timestamp ts = res.getTimestamp(i);
+                            if (ts != null) {
+                                result.append(String.valueOf(ts.getTime() + offSet));
+                            } else {
+                                result.append("0");
+                            }
                             break;
                         case -7:
                             result.append(res.getBoolean(i));
@@ -193,15 +247,10 @@ System.out.println("getQueryList SQL="+sql+"<<");
             String[] names = new String[count1];
             int[] types = new int[count1];
             String selField = "";
-/*
-            FileWriter writer;
-System.out.println("pathOut-"+pathOut+"<<");
-            writer = new FileWriter(pathOut, false);
-*/
+
             for (int i = 1; i < count1; i++ ) {
                 String nn = rsmd.getColumnName(i);
                 names[i] = nn;
-//                result.append(selField + quote + nn + quote);
                 result.append(selField + nn);
                 selField = ";";
                 types[i] = rsmd.getColumnType(i);
@@ -209,11 +258,13 @@ System.out.println("pathOut-"+pathOut+"<<");
 //System.out.println("head="+result+"<<");
             writer.write(result + "\n");
             result.setLength(0);
+            Calendar cal = Calendar.getInstance();
+            TimeZone tz = cal.getTimeZone();
+            int offSet = tz.getRawOffset();
             while (res.next()) {
                 selField = "";
                 for (int i = 1; i < count1; i++ ) {
 //                    result.append(selField + quote + names[i] + quoteColon);
-//System.out.println("II="+i+" types[i]="+types[i]+" NNN="+names[i]+"<<");
                     switch(types[i]) {
                         case -5:
                             result.append(selField + String.valueOf(res.getLong(i)));
@@ -236,11 +287,28 @@ System.out.println("pathOut-"+pathOut+"<<");
                             result.append(selField + quote + stRes + quote);                           
                             break;
                         case 91:
-                            result.append(selField + quote + res.getDate(i) + quote);
+                            Date dd = res.getTimestamp(i);
+                            if (dd != null) {
+                                result.append(selField + String.valueOf(dd.getTime() + offSet));
+                            } else {
+                                result.append(selField + "0");
+                            }
+                            break;
+                        case 92:
+                            Time tt = res.getTime(i);
+                            if (tt != null) {
+                                result.append(selField + String.valueOf(tt.getTime() + offSet));
+                            } else {
+                                result.append(selField + "0");
+                            }
                             break;
                         case 93:
-//System.out.print("DDD="+res.getTimestamp(i));
-                            result.append(selField + res.getTimestamp(i));
+                            Timestamp ts = res.getTimestamp(i);
+                            if (ts != null) {
+                                result.append(selField + String.valueOf(ts.getTime() + offSet));
+                            } else {
+                                result.append(selField + "0");
+                            }
                             break;
                         case -7:
                             result.append(selField + res.getBoolean(i));

@@ -79,6 +79,7 @@ public class WorkingWithTables extends BaseServlet {
                     try {
                         queryDat = getStringRequest(request);
                         ts = gson.fromJson(queryDat, TableSave.class);
+                        
                         res = tableDb.saveData(schema, ts);
                         if (res.length() > 0) {
                             sendError(response, res);

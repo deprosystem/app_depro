@@ -2,6 +2,12 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group/>
+        <group>
+            <file>file:/C:/Users/Yurii/Documents/NetBeansProjects/AppDePro/src/java/db/TableDB.java</file>
+            <file>file:/C:/Users/Yurii/Documents/NetBeansProjects/AppDePro/web/js/editData/editTab.js</file>
+            <file>file:/C:/Users/Yurii/Documents/NetBeansProjects/AppDePro/src/java/db/BaseDB.java</file>
+            <file>file:/C:/Users/Yurii/Documents/NetBeansProjects/AppDePro/web/js/tables.js</file>
+            <file>file:/C:/Users/Yurii/Documents/NetBeansProjects/AppDePro/src/java/servlets/WorkingWithTables.java</file>
+        </group>
     </open-files>
 </project-private>

@@ -56,10 +56,6 @@ function EditTable(meta, data, domEl, dataTitle, dataNumb, footer, obrSave) {
     footer.appendChild(csvEksport);
     footer.appendChild(saveControl);
     
-    
-    
-//    formEditTab();
-    
     function formEditTab() {
         ikD = edData.length;
         let row;
@@ -99,9 +95,26 @@ function EditTable(meta, data, domEl, dataTitle, dataNumb, footer, obrSave) {
                 case "Long":
                     item.lenTab = 50;
                     break;
+                case "Timestamp":
+                    if (item.name.indexOf("__") == 0) {
+                        item.lenTab = 125;
+                    } else {
+                        item.lenTab = 180;
+                    }
+                    break;
                 case "Time":
+                    if (item.name.indexOf("__") == 0) {
+                        item.lenTab = 100;
+                    } else {
+                        item.lenTab = 70;
+                    }
+                    break;
                 case "Date":
-                    item.lenTab = 120;
+                    if (item.name.indexOf("__") == 0) {
+                        item.lenTab = 85;
+                    } else {
+                        item.lenTab = 120;
+                    }
                     break;
                 case "Float":
                     item.lenTab = 50;
@@ -467,113 +480,154 @@ function EditTable(meta, data, domEl, dataTitle, dataNumb, footer, obrSave) {
         }
         let inp;
         let img;
-        switch (met.type) {
-            case "Boolean":
-                inp = document.createElement('input');
-                inp.type = "checkbox";
-                inp.name = met.name;
-                if (vv != null) {
-                    inp.checked = vv;
-                } else {
-                    inp.checked = false;
-                }
-                if (met.marg != null) {
-                    inp.style.marginLeft = met.marg + "px";
-                    inp.style.marginRight = met.marg + "px";
-                }
-                inp.style.backgroundColor = "#0000";
-                td.appendChild(inp);
-                break;
-            case "Bigserial":
-            case "Serial":
-                inp = document.createElement('div');
-                inp.type = "serial";
-                if (vv != null) {
-                    inp.innerHTML = vv;
-                    td.primaryK = vv;
-                } else {
-                    inp.innerHTML = "";
-                    td.primaryK = "";
-                }
-                inp.name = met.name;
-                inp.style.cssText = "margin-left:3px;width:" + (met.lenTab - 6) + "px;height:" + hCells + "px;text-align:right";
-                td.appendChild(inp);
-                break;
-            case "Select":
-                if (met.select != null && met.select.length > 0) {
-                    td.appendChild(setSelect(met, vv));
-                }
-                break;
-            case "Gallery":
-                img = newDOMelement('<img style="width:100%;height:100%;cursor:pointer">');
-                if (vv != null && vv != "") {
-                    let vv_1 = JSON.parse(vv);
-                    img.adrImg = vv_1;
-                    img.src = vv_1[vv_1.length - 1];
-                }
-                img.typeEl = "gallery";
-                img.addEventListener('click', function(event){selecktImgFile(img)}, false);
-                td.appendChild(img);
-                break;
-            case "Img":
-                img = newDOMelement('<img style="width:100%;height:100%;cursor:pointer">');
-                if (vv != null && vv != "") {
-                    img.src = vv;
-                    img.srcElem = vv;
-                    img.adrImg = vv;
-                }
-                img.typeEl = "img";
-                img.addEventListener('click', function(event){selecktImgFile(img)}, false);
-//                img.addEventListener('contextmenu', function(event){selecktImgServer(event)}, false);
-                td.appendChild(img);
-                break;
-            case "Date":
-                inp = newDOMelement('<input type="date" style="margin-left:3px;border:none;width:' + (met.lenTab - 6) + 'px;"/>');
-                if (vv != null) {
-                    inp.value = vv;
-                } else {
-                    inp.value = "";
-                }
-                inp.addEventListener('change', function(event){setFlagEdit(event)}, false);
-                td.appendChild(inp);
-                break;
-            case "Time":
-                inp = newDOMelement('<input type="time" style="margin-left:3px;border:none;width:' + (met.lenTab - 6) + 'px;"/>');
-                if (vv != null) {
-                    inp.value = vv;
-                } else {
-                    inp.value = "";
-                }
-                inp.addEventListener('change', function(event){setFlagEdit(event)}, false);
-                td.appendChild(inp);
-                break;
-            default:
-                inp = document.createElement('input');
-                inp.type = "text";
-                inp.name = met.name;
-                inp.style.cssText = "margin-left:3px;border:none;width:" + (met.lenTab - 6) + "px;";
-                if (vv != null) {
-                    inp.value = vv;
-                } else {
-                    inp.value = "";
-                }
+        if (met.name.indexOf("__") == 0) {
+            inp = document.createElement('div');
+            inp.type = "user";
+            if (vv != null) {
+                let vv_1 = vv;
                 switch (met.type) {
-                    case "Long":
-                    case "Int":
-                        inp.addEventListener('keydown', function(event){clickNumbet(event)}, false);
+                    case "Timestamp":
+                        vv_1 = new Date(vv);
+                        vv_1 = vv_1.toLocaleString();
                         break;
-                    case "Double":
-                    case "Float":
-                        inp.addEventListener('keydown', function(event){editFloat(event)}, false);
+                    case "Date":
+                        vv_1 = new Date(vv);
+                        vv_1 = vv_1.toLocaleDateString();
                         break;
-                    case "Text":
-                    default:
-                        inp.addEventListener('keydown', function(event){clickText(event, met.valid)}, false);
+                    case "Time":
+                        vv_1 = new Date(vv);
+                        vv_1 = vv_1.toLocaleTimeString();
+                        break;
                 }
-                inp.addEventListener('focus', function(event){focusInput(event)}, false);
-                inp.addEventListener('blur', function(event){blurInput(event)}, false);
-                inp.style.backgroundColor = "#0000";
-                td.appendChild(inp);
+                inp.innerHTML = vv_1;
+            } else {
+                inp.innerHTML = "";
+            }
+            inp.name = met.name;
+            inp.style.cssText = "margin-left:3px;width:" + (met.lenTab - 6) + "px;height:" + hCells + "px;text-align:right";
+            td.appendChild(inp);
+        } else {
+            switch (met.type) {
+                case "Boolean":
+                    inp = document.createElement('input');
+                    inp.type = "checkbox";
+                    inp.name = met.name;
+                    if (vv != null) {
+                        inp.checked = vv;
+                    } else {
+                        inp.checked = false;
+                    }
+                    if (met.marg != null) {
+                        inp.style.marginLeft = met.marg + "px";
+                        inp.style.marginRight = met.marg + "px";
+                    }
+                    inp.style.backgroundColor = "#0000";
+                    td.appendChild(inp);
+                    break;
+                case "Bigserial":
+                case "Serial":
+                    inp = document.createElement('div');
+                    inp.type = "serial";
+                    if (vv != null) {
+                        inp.innerHTML = vv;
+                        td.primaryK = vv;
+                    } else {
+                        inp.innerHTML = "";
+                        td.primaryK = "";
+                    }
+                    inp.name = met.name;
+                    inp.style.cssText = "margin-left:3px;width:" + (met.lenTab - 6) + "px;height:" + hCells + "px;text-align:right";
+                    td.appendChild(inp);
+                    break;
+                case "Select":
+                    if (met.select != null && met.select.length > 0) {
+                        td.appendChild(setSelect(met, vv));
+                    }
+                    break;
+                case "Gallery":
+                    img = newDOMelement('<img style="width:100%;height:100%;cursor:pointer">');
+                    if (vv != null && vv != "") {
+                        let vv_1 = JSON.parse(vv);
+                        img.adrImg = vv_1;
+                        img.src = vv_1[vv_1.length - 1];
+                    }
+                    img.typeEl = "gallery";
+                    img.addEventListener('click', function(event){selecktImgFile(img)}, false);
+                    if (vv != null && vv != "") {
+                        img.addEventListener("contextmenu", function(){event.preventDefault();event.stopPropagation();editGallery(img);return false;}, false);
+                    }
+                    td.appendChild(img);
+                    break;
+                case "Img":
+                    img = newDOMelement('<img style="width:100%;height:100%;cursor:pointer">');
+                    if (vv != null && vv != "") {
+                        img.src = vv;
+                        img.srcElem = vv;
+                        img.adrImg = vv;
+                    }
+                    img.typeEl = "img";
+                    img.addEventListener('click', function(event){selecktImgFile(img)}, false);
+    //                img.addEventListener('contextmenu', function(event){selecktImgServer(event)}, false);
+                    td.appendChild(img);
+                    break;
+                case "Timestamp":
+                    inp = newDOMelement('<input type="datetime-local" style="margin-left:3px;border:none;width:' + (met.lenTab - 6) + 'px;"/>');
+                    if (vv != null && vv != 0) {
+                        inp.valueAsNumber = vv;
+                    } else {
+                        inp.value = "";
+                    }
+                    inp.addEventListener('change', function(event){setFlagEdit(event)}, false);
+                    td.appendChild(inp);
+                    break;
+                case "Date":
+                    inp = newDOMelement('<input type="date" style="margin-left:3px;border:none;width:' + (met.lenTab - 6) + 'px;"/>');
+                    if (vv != null && vv != 0) {
+                        inp.valueAsNumber = vv;
+                    } else {
+                        inp.value = "";
+                    }
+                    inp.addEventListener('change', function(event){setFlagEdit(event)}, false);
+                    td.appendChild(inp);
+                    break;
+                case "Time":
+                    inp = newDOMelement('<input type="time" style="margin-left:3px;border:none;width:' + (met.lenTab - 6) + 'px;"/>');
+                    if (vv != null && vv != 0) {
+                        inp.valueAsNumber = vv;
+                    } else {
+                        inp.value = "";
+                    }
+                    inp.addEventListener('change', function(event){setFlagEdit(event)}, false);
+                    td.appendChild(inp);
+                    break;
+                default:
+                    inp = document.createElement('input');
+                    inp.type = "text";
+                    inp.name = met.name;
+                    inp.style.cssText = "margin-left:3px;border:none;width:" + (met.lenTab - 6) + "px;";
+                    if (vv != null) {
+                        inp.value = vv;
+                    } else {
+                        inp.value = "";
+                    }
+                    switch (met.type) {
+                        case "Long":
+                        case "Int":
+                            inp.addEventListener('keydown', function(event){clickNumbet(event)}, false);
+                            break;
+                        case "Double":
+                        case "Float":
+                            inp.addEventListener('keydown', function(event){editFloat(event)}, false);
+                            break;
+                        case "Text":
+                        default:
+                            inp.addEventListener('keydown', function(event){clickText(event, met.valid)}, false);
+                    }
+                    inp.addEventListener('focus', function(event){focusInput(event)}, false);
+                    inp.addEventListener('blur', function(event){blurInput(event)}, false);
+                    inp.style.backgroundColor = "#0000";
+                    td.appendChild(inp);
+            }
         }
         return td;
     }
@@ -581,6 +635,11 @@ function EditTable(meta, data, domEl, dataTitle, dataNumb, footer, obrSave) {
     function selecktImgFile(img) {
         cell = img.parentElement;
         sendImageFile(meta.name_table, self.edMeta[cell.numField].name, img);
+    }
+    
+    function editGallery(img) {
+        cell = img.parentElement;
+        editGalleryFile(meta.name_table, self.edMeta[cell.numField].name, img);
     }
 
     function setImgEditData(i, par) {
@@ -870,11 +929,14 @@ function EditTable(meta, data, domEl, dataTitle, dataNumb, footer, obrSave) {
         let sep = "";
         for (let i = 0; i < ikM; i++) {
             let item = self.edMeta[i];
-            if (item.type.indexOf("erial") == -1) {     //  not    Serial or Bigserial
-                res += sep + item.name;
+            let nam = item.name;
+//console.log("III="+i+" SYSTEM="+item.system+"<<");
+            if (item.type.indexOf("erial") == -1 && nam.indexOf("__") != 0) {     //  not    Serial or Bigserial
+                res += sep + nam;
                 sep = ", ";
             }
         }
+console.log("newListFieldsName="+res+")");
         return res + ")";
     }
     
@@ -886,10 +948,14 @@ function EditTable(meta, data, domEl, dataTitle, dataNumb, footer, obrSave) {
             let item = self.edMeta[i];
             let val;
             let inp;
-            if (item.type.indexOf("erial") == -1) {     //  not    Serial or Bigserial
+            if (item.type.indexOf("erial") == -1 && item.name.indexOf("__") != 0) {     //  not    Serial or Bigserial
                 let dat_i = dat.getElementsByClassName("col")[i];
                 if (dat_i.isEdit) {
                     switch (item.type) {
+                        case "Timestamp":
+                            inp = dat_i.querySelector('input');
+                            val = "'" + inp.value.replaceAll("'", "''") + "'";
+                            break;
                         case "Date":
                         case "Time":
                         case "Text":
@@ -938,9 +1004,14 @@ function EditTable(meta, data, domEl, dataTitle, dataNumb, footer, obrSave) {
             let val;
             let inp;
             let dat_i = dat.getElementsByClassName("col")[i];
-            if (item.type.indexOf("erial") == -1) {     //  not    Serial or Bigserial
+            let nam = item.name;
+            if (item.type.indexOf("erial") == -1 && nam.indexOf("__") != 0) {     //  not    Serial or Bigserial
                 if (dat_i.isEdit) {
                     switch (item.type) {
+                        case "Timestamp":
+                            inp = dat_i.querySelector('input');
+                            val = "'" + inp.value.replaceAll("'", "''") + "'";
+                            break;
                         case "Date":
                         case "Time":
                             inp = dat_i.querySelector('input');
