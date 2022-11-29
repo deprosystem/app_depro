@@ -61,7 +61,7 @@ public class BaseDB {
     }
 
     public String getQueryList(String sql) {
-//System.out.println("getQueryList SQL="+sql+"<<");
+System.out.println("getQueryList SQL="+sql+"<<");
         StringBuilder result = new StringBuilder(2048);
         result.append("[");
         try (Connection connection = getDBConnection(); Statement statement = connection.createStatement()) {
@@ -142,12 +142,14 @@ public class BaseDB {
             }
         } catch (SQLException | ClassNotFoundException ex) {
             System.out.println("getQueryList error="+ex);
+            return "error: " + ex + " SQL=" + sql;
         }
         result.append("]");
         return result.toString();
     }
     
     public String getQueryRecord(String sql) {
+System.out.println("getQueryRecord SQL="+sql);
         StringBuilder result = new StringBuilder(1024);
         result.append("{");
         try (Connection connection = getDBConnection(); Statement statement = connection.createStatement()) {

@@ -147,7 +147,7 @@ System.out.println("query="+ds.query+" schema="+ds.schema);
     public void sendError(HttpServletResponse response, String message) {
         ErrorMsg err = new ErrorMsg();
         err.status = "error";
-        err.title = "Ошибка";
+        err.title = "Error";
         err.message = message;
         sendResult(response, gson.toJson(err), HttpServletResponse.SC_BAD_REQUEST);   // 404
     }

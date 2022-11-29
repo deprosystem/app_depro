@@ -266,7 +266,11 @@ public class Querys extends BaseServlet {
                                         sql += " ORDER BY " + ord;
                                     }
                                     String resMob = queryDB.getQueryList(sql);
-                                    sendResult(response, resMob);
+                                    if (resMob.indexOf("error") == 0) {
+                                        sendError(response, resMob);
+                                    } else {
+                                        sendResult(response, resMob);
+                                    }
                                     break;
                                 case "INSERT":
                                     if (request.getContentType() != null && 

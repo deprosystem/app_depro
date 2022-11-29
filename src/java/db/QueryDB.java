@@ -66,7 +66,7 @@ public class QueryDB extends BaseDB {
                 res.param_query = result.getString("param_query");
             }
         } catch (SQLException | ClassNotFoundException ex) {
-            System.out.println("getQueryRecord error="+ex);
+            System.out.println("getSqlForMobile error="+ex);
         }
         return res;
     }
@@ -88,7 +88,7 @@ public class QueryDB extends BaseDB {
                 res.orderBy = result.getString("orderBy");
             }
         } catch (SQLException | ClassNotFoundException ex) {
-            System.out.println("getQueryRecord error="+ex);
+            System.out.println("getQueryMobile error="+ex);
         }
         return res;
     }

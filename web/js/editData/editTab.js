@@ -522,6 +522,7 @@ function EditTable(meta, data, domEl, dataTitle, dataNumb, footer, obrSave) {
                         inp.style.marginRight = met.marg + "px";
                     }
                     inp.style.backgroundColor = "#0000";
+                    inp.addEventListener('change', function(event){setFlagEdit(event)}, false);
                     td.appendChild(inp);
                     break;
                 case "Bigserial":
@@ -936,7 +937,7 @@ function EditTable(meta, data, domEl, dataTitle, dataNumb, footer, obrSave) {
                 sep = ", ";
             }
         }
-console.log("newListFieldsName="+res+")");
+//console.log("newListFieldsName="+res+")");
         return res + ")";
     }
     
@@ -980,7 +981,12 @@ console.log("newListFieldsName="+res+")");
                             break;
                         case "Boolean":
                             inp = dat_i.querySelector('input');
-                            val = inp.value;
+                            if (inp.checked) {
+                                val = "TRUE";
+                            } else {
+                                val = "FALSE";
+                            }
+//                            val = inp.value;
                             break;
                     }
                 } else {
@@ -1040,7 +1046,12 @@ console.log("newListFieldsName="+res+")");
                             break;
                         case "Boolean":
                             inp = dat_i.querySelector('input');
-                            val = inp.value;
+                            if (inp.checked) {
+                                val = "TRUE";
+                            } else {
+                                val = "FALSE";
+                            }
+//                            val = inp.value;
                             break;
                     }
                     res += sep + item.name + " = " + val;
