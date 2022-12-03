@@ -85,7 +85,6 @@ System.out.println("getQueryList SQL="+sql+"<<");
                 selField = "";
                 for (int i = 1; i < count1; i++ ) {
                     result.append(selField + quote + names[i] + quoteColon);
-//System.out.println("II="+i+" types[i]="+types[i]+" NNN="+names[i]+"<<");
                     switch(types[i]) {
                         case -5:
                             result.append(String.valueOf(res.getLong(i)));
