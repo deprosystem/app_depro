@@ -88,6 +88,13 @@ public class Querys extends BaseServlet {
                     String resG = queryDB.getQueryRecord(sqlG);
                     sendResult(response, resG);
                     break;
+                case "/query/list":
+//                    sqlG = "SELECT * FROM " + schema + "._querys_meta WHERE id_query>3";
+                    sqlG = "SELECT id_query, name_query, descr_query, type_query, param_query, fields_result FROM " + schema 
+                            + "._querys_meta WHERE id_query>3";
+                    resG = queryDB.getQueryList(sqlG);
+                    sendResult(response, resG);
+                    break;
                 default:
                     String[] ar = (" " + ds.query).split("/");
                     ds.schema = ar[2];

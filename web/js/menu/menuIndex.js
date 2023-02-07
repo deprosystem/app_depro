@@ -4,6 +4,9 @@ var stringExportRes;
 listMenu[0] = {nameM : 'Images', dependProject : true};
 listMenu[0].children = new Array(
         {nameI : 'Upload image', func : uploadImage, dependProject : true},
+        {nameI : 'add field descr_query', func : addDescr, dependProject : true},
+        {nameI : 'add field fields_result', func : addFieldsR, dependProject : true}
+                
 //        {nameI : 'add field orderBy', func : addOrder, dependProject : true}
     );
 
@@ -47,6 +50,14 @@ function uploadImage() {
 
 function addOrder() {
     doServer("POST", "db/addField", cbAddOrder, "");
+}
+
+function addDescr() {
+    doServer("POST", "db/addDescr", cbAddOrder, "");
+}
+
+function addFieldsR() {
+    doServer("POST", "db/addFieldsResult", cbAddOrder, "");
 }
 
 function cbAddOrder(res) {

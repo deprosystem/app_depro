@@ -54,6 +54,16 @@ public class WorkingWithDB extends BaseServlet {
                 clientsDB.addField(schema);
                 sendResultOk(response);
                 break;
+            case "/db/addDescr":
+                schema = request.getHeader("schemDB");
+                clientsDB.addDescr(schema);
+                sendResultOk(response);
+                break;
+            case "/db/addFieldsResult":
+                schema = request.getHeader("schemDB");
+                clientsDB.addFieldsResult(schema);
+                sendResultOk(response);
+                break;
         }
     }
 

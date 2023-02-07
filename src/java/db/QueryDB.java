@@ -18,9 +18,9 @@ public class QueryDB extends BaseDB {
     public long createQuery(Query qu, String schema) {
         long res = -1;
         try (Connection connection = getDBConnection(); Statement statement = connection.createStatement()) {
-            String str = "INSERT INTO " + schema + "._querys_meta (type_query, name_query, origin_query, sql_query, param_query, err_1, err_2, list_where, orderBy) VALUES ('"
-                    + qu.type_query + "','" + qu.name_query + "','" + qu.origin_query + "','" + qu.sql_query + "','" + qu.param_query + "','" 
-                    + qu.err_1 + "','" + qu.err_2 + "','" + qu.listWhere + "','" + qu.orderBy + "');";
+            String str = "INSERT INTO " + schema + "._querys_meta (type_query, name_query, descr_query, origin_query, sql_query, param_query, err_1, err_2, list_where, orderBy, fields_result) VALUES ('"
+                    + qu.type_query + "','" + qu.name_query + "','" + qu.descr_query + "','" + qu.origin_query + "','" + qu.sql_query + "','" + qu.param_query + "','" 
+                    + qu.err_1 + "','" + qu.err_2 + "','" + qu.listWhere + "','" + qu.orderBy + "','" + qu.fields_result + "');";
 //System.out.println("createQuery SQL="+str+"<<");
             int updateCount = statement.executeUpdate(str, Statement.RETURN_GENERATED_KEYS);
             try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
@@ -42,10 +42,10 @@ public class QueryDB extends BaseDB {
         String strUpd = "UPDATE " + schema + "._querys_meta SET ";
         String nn = "";
         if (qu.id_query > 3) {
-            nn = "', name_query='" + qu.name_query;
+            nn = "', name_query='" + qu.name_query + "', descr_query='" + qu.descr_query;
         }
-        strUpd += "type_query ='" + qu.type_query +  nn +  "', origin_query='" + qu.origin_query 
-                +  "', sql_query='" + qu.sql_query +  "', param_query='" + qu.param_query +  "', err_1='" + qu.err_1 + "', list_where='" + qu.listWhere + "', orderBy='" + qu.orderBy 
+        strUpd += "type_query ='" + qu.type_query +  nn +  "', origin_query='" + qu.origin_query + "', fields_result='" + qu.fields_result
+                + "', sql_query='" + qu.sql_query +  "', param_query='" + qu.param_query +  "', err_1='" + qu.err_1 + "', list_where='" + qu.listWhere + "', orderBy='" + qu.orderBy 
                 + "' WHERE id_query = " + qu.id_query;
 //System.out.println("changeQuery strUpd="+strUpd+"<<");
         try (Connection connection = getDBConnection(); Statement statement = connection.createStatement()) {
