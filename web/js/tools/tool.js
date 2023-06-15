@@ -215,4 +215,11 @@ function readFile(ext, cbResult) {
     buttonCancel.addEventListener("click", function(){closeWindow(buttonCancel);}, true);
 }
 
+function add0(st) {
+    if (st.length == 1) {
+        return "0" + st;
+    } 
+    return st
+}
+
 

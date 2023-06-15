@@ -22,7 +22,7 @@ public class ClientsDB extends BaseDB {
                     + "(id_table SERIAL, name_table VARCHAR(50), title_table VARCHAR(100), fields_table TEXT, PRIMARY KEY ( id_table ))");
             statement.executeUpdate("CREATE UNIQUE INDEX IF NOT EXISTS name_t ON " + nameSchema + "._tables_meta " + "(name_table)");
             statement.executeUpdate("CREATE TABLE " + nameSchema + "._querys_meta " 
-                    + "(id_query SERIAL, name_query VARCHAR(100), type_query VARCHAR(12), origin_query TEXT, sql_query TEXT, param_query TEXT, err_1 TEXT, err_2 TEXT, list_where TEXT, orderBy TEXT, fields_result TEXT, PRIMARY KEY ( id_query ))"); 
+                    + "(id_query SERIAL, descr_query VARCHAR(150), name_query VARCHAR(100), type_query VARCHAR(12), origin_query TEXT, sql_query TEXT, param_query TEXT, err_1 TEXT, err_2 TEXT, list_where TEXT, orderBy TEXT, fields_result TEXT, PRIMARY KEY ( id_query ))"); 
 // create table USER
             Table tb = new Table();
             tb.id_table = -1;

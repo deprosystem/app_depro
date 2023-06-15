@@ -70,7 +70,7 @@ function sendImageFile(nameTable, nameField, el) {
     }, true);
     buttonCancel.addEventListener("click", function(){closeWindow(buttonCancel);}, true);
 }
-
+// Привязка названия файла изображения к типу и названию компонента ????
 function setLink(inp, el) {
     if (inp.value != null && inp.value != "") {
         setImageInEl(el, inp.value);

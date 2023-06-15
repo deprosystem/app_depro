@@ -89,11 +89,37 @@ public class Querys extends BaseServlet {
                     sendResult(response, resG);
                     break;
                 case "/query/list":
-//                    sqlG = "SELECT * FROM " + schema + "._querys_meta WHERE id_query>3";
                     sqlG = "SELECT id_query, name_query, descr_query, type_query, param_query, fields_result FROM " + schema 
                             + "._querys_meta WHERE id_query>3";
                     resG = queryDB.getQueryList(sqlG);
-                    sendResult(response, resG);
+                    if (resG.indexOf("error") == 0) {
+                        sendError(response, resG);
+                    } else {
+                        sendResult(response, resG);
+                    }
+                    break;
+                    
+                case "/query/del_query":
+                    qu = null;
+                    try {
+                        stDescr = getStringRequest(request);
+                        qu = gson.fromJson(stDescr, Query.class);
+                    } catch (JsonSyntaxException | IOException e) {
+                        System.out.println(e);
+                        sendError(response, "Query delete error " + e.toString());
+                        break;
+                    }
+                    if (qu != null) {
+                        schema = request.getHeader("schemDB");
+                        String result = queryDB.deleteQuery(schema, qu.id_query);
+                        if (result.length() == 0) {
+                            sendResultOk(response);
+                        } else {
+                            sendError(response, result);
+                        }
+                    } else {
+                        sendError(response, "Query delete error in param");
+                    }
                     break;
                 default:
                     String[] ar = (" " + ds.query).split("/");

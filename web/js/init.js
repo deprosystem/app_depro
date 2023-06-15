@@ -1,6 +1,6 @@
 var schema;
 var listTablesView;
-var listTables = null;
+//var listTables = null;
 var scrollTables;
 var debagStatus;
 var isLocalHost;

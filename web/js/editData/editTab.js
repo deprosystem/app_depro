@@ -24,6 +24,7 @@ function EditTable(meta, data, domEl, dataTitle, dataNumb, footer, obrSave) {
     if (meta == null) {
         return null;
     };
+    let offset = new Date().getTimezoneOffset() * 60000;
     let self = this;
     self.edMeta = meta.description;
 //    this.edMeta = meta.description;
@@ -250,6 +251,7 @@ function EditTable(meta, data, domEl, dataTitle, dataNumb, footer, obrSave) {
     
     self.csvParse = function (strCSV, elFirst) {
         let first = false;
+        let col;
         if (elFirst != null && elFirst.src.indexOf("check-sel") > -1) {
             first = true;
         }
@@ -257,7 +259,6 @@ function EditTable(meta, data, domEl, dataTitle, dataNumb, footer, obrSave) {
         let listFieldCSV;
         let arRow = strCSV.split(/\r?\n|\r/);
         let ik = arRow.length - 1;
-        let listLink = [];
         let listNoField = "";
         let beginCsv;
         if (first) {
@@ -279,14 +280,16 @@ function EditTable(meta, data, domEl, dataTitle, dataNumb, footer, obrSave) {
                 }
                 listFieldTab[i] = num;
             }
+/*
             if (countCSV < jk) {
                 dialogError("Error!", "There are no fields in the table " + listNoField);
                 return;
             }
+*/
         } else {
             beginCsv = 0;
             for (let i = 0; i < ikM; i++) {
-                listLink[i] = i;
+                listFieldTab[i] = i;
             }
         }
         let lastRow;
@@ -484,18 +487,18 @@ function EditTable(meta, data, domEl, dataTitle, dataNumb, footer, obrSave) {
             inp = document.createElement('div');
             inp.type = "user";
             if (vv != null) {
-                let vv_1 = vv;
+                let vv_1 = Number(vv);
                 switch (met.type) {
                     case "Timestamp":
-                        vv_1 = new Date(vv);
+                        vv_1 = new Date(vv_1);
                         vv_1 = vv_1.toLocaleString();
                         break;
                     case "Date":
-                        vv_1 = new Date(vv);
+                        vv_1 = new Date(vv_1);
                         vv_1 = vv_1.toLocaleDateString();
                         break;
                     case "Time":
-                        vv_1 = new Date(vv);
+                        vv_1 = new Date(vv_1);
                         vv_1 = vv_1.toLocaleTimeString();
                         break;
                 }
@@ -584,7 +587,9 @@ function EditTable(meta, data, domEl, dataTitle, dataNumb, footer, obrSave) {
                 case "Date":
                     inp = newDOMelement('<input type="date" style="margin-left:3px;border:none;width:' + (met.lenTab - 6) + 'px;"/>');
                     if (vv != null && vv != 0) {
-                        inp.valueAsNumber = vv;
+//                        let offset = new Date().getTimezoneOffset() * 60000;
+                        let newDat = vv + offset;
+                        inp.valueAsNumber = newDat;
                     } else {
                         inp.value = "";
                     }
@@ -913,6 +918,7 @@ function EditTable(meta, data, domEl, dataTitle, dataNumb, footer, obrSave) {
             }
         }
         if (datNew.length > 1 || dataEdit.length > 0 || dataDel.length > 0) {
+console.log("editTab dataEdit="+JSON.stringify(dataEdit));
             queryDat = {name_table: meta.name_table, name_primary: primaryKayName, datNew: datNew, dataEdit: dataEdit, dataDel: dataDel};
             doServer('POST', 'tables/save', function(res){
                 edData = JSON.parse(res);
@@ -931,13 +937,12 @@ function EditTable(meta, data, domEl, dataTitle, dataNumb, footer, obrSave) {
         for (let i = 0; i < ikM; i++) {
             let item = self.edMeta[i];
             let nam = item.name;
-//console.log("III="+i+" SYSTEM="+item.system+"<<");
             if (item.type.indexOf("erial") == -1 && nam.indexOf("__") != 0) {     //  not    Serial or Bigserial
                 res += sep + nam;
                 sep = ", ";
             }
         }
-//console.log("newListFieldsName="+res+")");
+//console.log("newListFieldsName res="+res + ")<<");
         return res + ")";
     }
     
@@ -954,14 +959,15 @@ function EditTable(meta, data, domEl, dataTitle, dataNumb, footer, obrSave) {
                 if (dat_i.isEdit) {
                     switch (item.type) {
                         case "Timestamp":
-                            inp = dat_i.querySelector('input');
-                            val = "'" + inp.value.replaceAll("'", "''") + "'";
-                            break;
                         case "Date":
                         case "Time":
                         case "Text":
                             inp = dat_i.querySelector('input');
-                            val = "'" + inp.value.replaceAll("'", "''") + "'";
+                            if (inp.value == null || inp.value.length == 0) {
+                                val = "DEFAULT";
+                            } else {
+                                val = "'" + inp.value.replaceAll("'", "''") + "'";
+                            }
                             break;
                         case "Gallery":
                             inp = dat_i.querySelector('img');
@@ -996,6 +1002,7 @@ function EditTable(meta, data, domEl, dataTitle, dataNumb, footer, obrSave) {
                 sep = ", ";
             }
         }
+//console.log("   listFieldsValue res="+res + ")<<");
         return res + ")";
     }
     
@@ -1021,7 +1028,10 @@ function EditTable(meta, data, domEl, dataTitle, dataNumb, footer, obrSave) {
                         case "Date":
                         case "Time":
                             inp = dat_i.querySelector('input');
-                            val = "'" + inp.value + "'";
+let dd = new Date(inp.value);
+console.log("newUpdateSet VAL="+inp.value+"<< ddd="+dd.getTime());
+//                            val = "'" + inp.value + "'";
+                            val = dd.getTime();
                         case "Text":
                             inp = dat_i.querySelector('input');
                             vv = inp.value;

@@ -19,8 +19,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
+import java.sql.Date;
+//import java.util.Date;
 import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -61,7 +63,7 @@ public class BaseDB {
     }
 
     public String getQueryList(String sql) {
-System.out.println("getQueryList SQL="+sql+"<<");
+//System.out.println("getQueryList SQL="+sql+"<<");
         StringBuilder result = new StringBuilder(2048);
         result.append("[");
         try (Connection connection = getDBConnection(); Statement statement = connection.createStatement()) {
@@ -109,7 +111,12 @@ System.out.println("getQueryList SQL="+sql+"<<");
                         case 91:
                             Date dd = res.getDate(i);
                             if (dd != null) {
-                                result.append(String.valueOf(dd.getTime() + offSet));
+Date ddN = new Date(dd.getTime());
+System.out.println("names[i]="+names[i]+"<< DD="+dd+"<< TTTT="+dd.getTime()+" NNN="+ddN+"<<");
+
+
+//                                result.append(String.valueOf(dd.getTime() + offSet));
+                                result.append(String.valueOf(dd.getTime()));
                             } else {
                                 result.append("0");
                             }
@@ -148,7 +155,7 @@ System.out.println("getQueryList SQL="+sql+"<<");
     }
     
     public String getQueryRecord(String sql) {
-System.out.println("getQueryRecord SQL="+sql);
+//System.out.println("getQueryRecord SQL="+sql);
         StringBuilder result = new StringBuilder(1024);
         result.append("{");
         try (Connection connection = getDBConnection(); Statement statement = connection.createStatement()) {
@@ -288,7 +295,7 @@ System.out.println("getQueryRecord SQL="+sql);
                             result.append(selField + quote + stRes + quote);                           
                             break;
                         case 91:
-                            Date dd = res.getTimestamp(i);
+                            Timestamp dd = res.getTimestamp(i);
                             if (dd != null) {
                                 result.append(selField + String.valueOf(dd.getTime() + offSet));
                             } else {

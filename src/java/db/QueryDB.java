@@ -92,5 +92,16 @@ public class QueryDB extends BaseDB {
         }
         return res;
     }
+    
+    public String deleteQuery(String schema, long id) {
+        try (Connection connection = getDBConnection(); Statement statement = connection.createStatement()) {
+// delete describe query
+            statement.executeUpdate("DELETE FROM " + schema + "._querys_meta" + " WHERE id_query=" + id);
+        } catch (SQLException | ClassNotFoundException ex) {
+            System.out.println("deleteQuery error="+ex);
+            return "deleteQuery error="+ex;
+        }
+        return "";
+    }
 
 }

@@ -90,10 +90,15 @@ public class TableDB extends BaseDB {
             }
             while ( ! (endNew && endOld)) {
                 if (iOld == iNew) {
+/*
                     if (! fOld.name.equals(fNew.name)) {
                         listFieldOld.add(fNew);
                         listFieldOld.add(fOld);
                     }
+*/
+                    listFieldOld.add(fNew);
+                    listFieldOld.add(fOld);
+                    
                     posOld++;
                     if (fieldsOld.size() <= posOld) {
                         endOld = true;
@@ -134,7 +139,7 @@ public class TableDB extends BaseDB {
                     }
                 }
             }
-            
+
             try (Connection connection = getDBConnection(); Statement statement = connection.createStatement()) {
                 String tableName = tb.schema + "." + nameTableOld;
                 connection.setAutoCommit(false); 
@@ -142,7 +147,16 @@ public class TableDB extends BaseDB {
                 for (int i = 0; i < ik; i = i + 2) {
                     fNew = listFieldOld.get(i);
                     fOld = listFieldOld.get(i + 1);
-                    statement.executeUpdate("ALTER TABLE " + tableName + " RENAME COLUMN " + fOld.name + " TO " + fNew.name);
+                    if (! fOld.def.equals(fNew.def)) {
+                        if (fNew.def.length() == 0) {
+                            statement.executeUpdate("ALTER TABLE " + tableName + " ALTER COLUMN " + fOld.name + " DROP DEFAULT");
+                        } else {
+                            statement.executeUpdate("ALTER TABLE " + tableName + " ALTER COLUMN " + fOld.name + " SET DEFAULT " + fNew.def);
+                        }
+                    }
+                    if (! fOld.name.equals(fNew.name)) {
+                        statement.executeUpdate("ALTER TABLE " + tableName + " RENAME COLUMN " + fOld.name + " TO " + fNew.name);
+                    }
                 }
                 ik = listFieldDel.size();
                 for (int i = 0; i < ik; i++) {
@@ -242,7 +256,6 @@ public class TableDB extends BaseDB {
             String pKey = "";
             String ind = "";
             for (Field f : lf) {
-//System.out.println("createTable FFFF="+gson.toJson(f)+"<<");
                 sql += sep + f.name;
                 switch (f.type) {
                     case "Gallery":
@@ -377,7 +390,7 @@ public class TableDB extends BaseDB {
                     str += sep + ts.datNew.get(i);
                     sep = ", ";
                 }
-//System.out.println("saveData="+str+"<<");
+//System.out.println("saveData INSERT="+str+"<<");
                 res = statement.executeUpdate(str);
                 if (res < 0) {
                     return "saveData error= no insert Record";
@@ -393,7 +406,7 @@ public class TableDB extends BaseDB {
 //System.out.println("saveData DEL="+str+"<<");
                 res = statement.executeUpdate(str);
                 if (res < 0) {
-                    return "saveDeleteData error= no insert Record";
+                    return "saveDeleteData error= no delete Record";
                 }
             }
             if (ts.dataEdit.size() > 0) {
@@ -402,6 +415,7 @@ public class TableDB extends BaseDB {
                 for (int i = 0; i < ik; i++) {
                     Timestamp timeS = new Timestamp(System.currentTimeMillis());
                     String dd = "__date_edit = '" + timeS.toInstant().toString() + "', ";
+System.out.println("saveData UPDATE="+stEd + dd + ts.dataEdit.get(i)+"<<");
                     statement.executeUpdate(stEd + dd + ts.dataEdit.get(i));
                 }
             }
