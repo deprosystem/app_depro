@@ -1,6 +1,5 @@
 function EditTable(meta, data, domEl, dataTitle, dataNumb, footer, obrSave) {
     let edData, edDomEl;
-//    this.edMeta;
     let edObrSave = obrSave;
     let widthTabl;
     let lineChangeWidthCell;
@@ -17,7 +16,6 @@ function EditTable(meta, data, domEl, dataTitle, dataNumb, footer, obrSave) {
     let widthSeparator = 3;
     let primaryKayName;
     let primaryKayNumber;
-//    let colorsStatus = ["", "#ffc700", "#0a0"];
     let funcMove, funcUp;   // что бы удалить обработчики с анонимными функциями
     let  colorSelect = "#f3f8ff", colorNew = "#f5f9ff", 
             colorDel, colorErrorTr, colorErrorTh;
@@ -27,7 +25,6 @@ function EditTable(meta, data, domEl, dataTitle, dataNumb, footer, obrSave) {
     let offset = new Date().getTimezoneOffset() * 60000;
     let self = this;
     self.edMeta = meta.description;
-//    this.edMeta = meta.description;
     let ikM = self.edMeta.length;
     if (domEl == null) {
         return null;
@@ -280,12 +277,6 @@ function EditTable(meta, data, domEl, dataTitle, dataNumb, footer, obrSave) {
                 }
                 listFieldTab[i] = num;
             }
-/*
-            if (countCSV < jk) {
-                dialogError("Error!", "There are no fields in the table " + listNoField);
-                return;
-            }
-*/
         } else {
             beginCsv = 0;
             for (let i = 0; i < ikM; i++) {
@@ -300,9 +291,11 @@ function EditTable(meta, data, domEl, dataTitle, dataNumb, footer, obrSave) {
         if (lastRow != null) {
             if (lastRow.newRecord && ! lastRow.isEdit) {
                 lastRow.remove();
+                let chNumb = dataNumb.children;
+                let lastNumb = chNumb[chNumb.length - 1];
+                lastNumb.remove();
             }
         }
-
         ik = arRow.length - 1;
         let num = 0;
         if (edDomEl.children != null) {
@@ -586,12 +579,25 @@ function EditTable(meta, data, domEl, dataTitle, dataNumb, footer, obrSave) {
                     break;
                 case "Date":
                     inp = newDOMelement('<input type="date" style="margin-left:3px;border:none;width:' + (met.lenTab - 6) + 'px;"/>');
-                    if (vv != null && vv != 0) {
-//                        let offset = new Date().getTimezoneOffset() * 60000;
-                        let newDat = vv + offset;
+                    let vv_N = 0;
+                    if (vv != null) {
+                        if (typeof vv === "number") {
+                            vv_N = vv;
+                        } else {
+                            if (vv.length != 0) {
+                                vv_N = parseInt(vv);
+                            }
+                        }
+                    }
+                    if (vv_N != 0) {
+                        let newDat = vv_N + offset;
                         inp.valueAsNumber = newDat;
                     } else {
-                        inp.value = "";
+                        if (met.def == "CURRENT_DATE") {
+                            inp.valueAsNumber = new Date();
+                        } else {
+                            inp.value = "";
+                        }
                     }
                     inp.addEventListener('change', function(event){setFlagEdit(event)}, false);
                     td.appendChild(inp);
@@ -918,7 +924,6 @@ function EditTable(meta, data, domEl, dataTitle, dataNumb, footer, obrSave) {
             }
         }
         if (datNew.length > 1 || dataEdit.length > 0 || dataDel.length > 0) {
-console.log("editTab dataEdit="+JSON.stringify(dataEdit));
             queryDat = {name_table: meta.name_table, name_primary: primaryKayName, datNew: datNew, dataEdit: dataEdit, dataDel: dataDel};
             doServer('POST', 'tables/save', function(res){
                 edData = JSON.parse(res);
@@ -1028,9 +1033,8 @@ console.log("editTab dataEdit="+JSON.stringify(dataEdit));
                         case "Date":
                         case "Time":
                             inp = dat_i.querySelector('input');
-let dd = new Date(inp.value);
-console.log("newUpdateSet VAL="+inp.value+"<< ddd="+dd.getTime());
-//                            val = "'" + inp.value + "'";
+                            let dd = new Date(inp.value);
+//console.log("newUpdateSet VAL="+inp.value+"<< ddd="+dd.getTime());
                             val = dd.getTime();
                         case "Text":
                             inp = dat_i.querySelector('input');

@@ -68,7 +68,7 @@ public class WorkingWithTables extends BaseServlet {
                     schema = request.getHeader("schemDB");
 
 //                    listTables = tableDb.getListTables("SELECT * FROM " + schema + "._tables_meta ORDER BY name_table");
-                    listTables = tableDb.getListTables("SELECT * FROM " + schema + "._tables_meta");
+                    listTables = tableDb.getListTables("SELECT * FROM " + schema + "._tables_meta ORDER BY name_table");
                     res = gson.toJson(listTables);
                     sendResult(response, res);
 

@@ -190,7 +190,7 @@ function readFile(ext, cbResult) {
     inputFile.addEventListener("change", function(){inputFileView.value = inputFile.files[0].name;}, true);
     
     let txtCheck = '<div style="float:left;clear:both;margin-top:8px;">'
-                +'<img class="check_first_line" onclick="checkElement(this);" style="float:left;cursor:pointer;margin-left:14px" width="16" height="16" src="img/check-act.png">'
+                +'<img class="check_first_line" onclick="checkElement(this);" style="float:left;cursor:pointer;margin-left:14px" width="16" height="16" src="img/check-sel_1.png">'
                 +'<div style="float:left;margin-top:3px;margin-left:10px;">The first line of the file contains the names of the table columns<\div>'
             +'</div>'
 //    let check_1_line = newDOMelement('<div style="float:left;margin-top:10px">The first line of the file contains the names of the table columns<\div>');

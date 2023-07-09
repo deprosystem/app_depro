@@ -26,7 +26,7 @@ function callEditTable(z) {
 }
 
 function cbListData(res) {
-//console.log("RES="+res);
+//console.log("APP_DePro RES="+res);
     let item = listTables[indSelectTable];
     let fields = JSON.parse(item.fields_table);
 //    fields.unshift({id_field:0, name:"id_" + item.name_table, type:"Bigserial", title:"", key:true});
@@ -43,7 +43,7 @@ function cbListData(res) {
             len = ff.title.length;
             nn = ff.title;
         }
-        let itemF = {name:ff.name,title:nn,type:ff.type,len:len,key:ff.key};
+        let itemF = {name:ff.name,title:nn,type:ff.type,len:len,key:ff.key,def:ff.def};
         listField.push(itemF);
     }
     let metaData = {titleForm:item.title_table, name_table:item.name_table, description:listField};

@@ -111,11 +111,8 @@ public class BaseDB {
                         case 91:
                             Date dd = res.getDate(i);
                             if (dd != null) {
-Date ddN = new Date(dd.getTime());
-System.out.println("names[i]="+names[i]+"<< DD="+dd+"<< TTTT="+dd.getTime()+" NNN="+ddN+"<<");
-
-
-//                                result.append(String.valueOf(dd.getTime() + offSet));
+//Date ddN = new Date(dd.getTime());
+//System.out.println("names[i]="+names[i]+"<< DD="+dd+"<< TTTT="+dd.getTime()+" NNN="+ddN+"<<");
                                 result.append(String.valueOf(dd.getTime()));
                             } else {
                                 result.append("0");
