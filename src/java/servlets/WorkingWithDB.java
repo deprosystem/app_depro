@@ -64,6 +64,17 @@ public class WorkingWithDB extends BaseServlet {
                 clientsDB.addFieldsResult(schema);
                 sendResultOk(response);
                 break;
+            case "/db/schems":
+                String sql = "SELECT schema_name, schema_owner FROM information_schema.schemata WHERE schema_owner = 'clients'";
+
+//                String sql = "SELECT schema_name FROM information_schema.schemata";
+                String res = clientsDB.getQueryList(sql);
+                if (res.indexOf("error") == 0) {
+                    sendError(response, res);
+                } else {
+                    sendResult(response, res);
+                }
+                break;
         }
     }
 

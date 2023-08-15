@@ -123,14 +123,14 @@ function punct(el) {
 function all() {
     alert('ALL');
 }
-
+/*
 function changeDevice(v) {
     var i = parseInt(v);
     screenW = sizeDeviceArray[i][0];
     screenH = sizeDeviceArray[i][1];
     setRoot();
 }
-
+*/
 function scaleMinus() {
     if (currentScale > 50) {
         currentScale -= 10;
